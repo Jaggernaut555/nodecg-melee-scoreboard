@@ -1,7 +1,7 @@
 # Script to run for release
 
 param(
-    [string]$version='v0.0.0',
+    [string]$version='0.0.0',
     [string]$bundleName='nodecg-melee-scoreboard'
 )
 
