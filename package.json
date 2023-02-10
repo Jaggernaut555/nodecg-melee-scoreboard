@@ -11,7 +11,6 @@
   "files": [
     "dashboard",
     "graphics",
-    "extension.js",
     "extension",
     "images"
   ],
@@ -85,6 +84,8 @@
   "license": "MIT",
   "devDependencies": {
     "@parcel/transformer-typescript-tsc": "^2.8.3",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/animejs": "^3.1.7",
     "@types/lodash": "^4.14.191",
     "@types/react": "^18.0.27",
@@ -98,6 +99,7 @@
     "parcel": "^2.8.3",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
+    "semantic-release": "^20.1.0",
     "stream-browserify": "^3.0.0",
     "typescript": "^4.9.4",
     "util": "^0.12.5"
@@ -114,6 +116,7 @@
   },
   "scripts": {
     "check": "tsc --noEmit",
+    "semantic-release": "semantic-release",
     "watch": "npm-run-all --parallel watch:**",
     "watch:extension": "parcel watch src/extension/*.ts --no-hmr --target extension",
     "watch:dashboard": "npx parcel watch \"src/dashboard/**/*.html\" --public-url /bundles/nodecg-melee-scoreboard/dashboard --no-hmr --target dashboard",
@@ -122,5 +125,10 @@
     "build:extension": "parcel build src/extension/*.ts --target extension",
     "build:dashboard": "parcel build \"src/dashboard/**/*.html\" --public-url /bundles/nodecg-melee-scoreboard/dashboard --target dashboard",
     "build:graphics": "parcel build \"src/graphics/**/*.html\" src/graphics/**/*.tsx --public-url /bundles/nodecg-melee-scoreboard/graphics --target graphics"
+  },
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jaggernaut555/nodecg-melee-scoreboard.git"
   }
 }

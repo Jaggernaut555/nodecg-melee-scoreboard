@@ -19,7 +19,7 @@ export async function initReplay(nodecg_init: NodeCG) {
     let slippiFolder = nodecg.Replicant<string>('slippiReplayFolder').value;
     let connectionStatus = nodecg.Replicant<ConnectionStatus>('slippiConnectionStatus');
     
-    nodecg.log.info("initing replay watcher");
+    nodecg.log.info("Setting up replay watcher");
 
     if (!slippiFolder || !path.isAbsolute(slippiFolder)) {
         nodecg.log.error("Configured Slippi folder is not an absolute path");

@@ -6,6 +6,8 @@ bower_components
 /extension
 /graphics
 /dashboard
+/dist
 .parcel-cache
 .cache
 .vscode
+*.zip

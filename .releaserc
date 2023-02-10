@@ -1,0 +1,32 @@
+{
+    "branches": [
+        "main"
+    ],
+    "plugins": [
+        "@semantic-release/commit-analyzer",
+        "@semantic-release/release-notes-generator",
+        [
+            "@semantic-release/git",
+            {
+                "assets": [
+                    "package.json",
+                    "package-lock.json"
+                ]
+            }
+        ],
+        [
+            "@semantic-release/exec",
+            {
+                "publishCmd": "scripts/prepare-nodecg.ps1"
+            }
+        ],
+        [
+            "@semantic-release/github",
+            {
+                "assets": [
+                    "*.zip"
+                ]
+            }
+        ]
+    ]
+}
