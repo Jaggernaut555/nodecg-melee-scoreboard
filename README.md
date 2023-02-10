@@ -1,7 +1,9 @@
 # Running
-Download the [latest release](https://github.com/Jaggernaut555/nodecg-melee-scoreboard/releases) and run the `run-scoreboard.bat` file.
+Download the portable .zip from the [latest release](https://github.com/Jaggernaut555/nodecg-melee-scoreboard/releases), extract it to it's own directory, then run the `run-scoreboard.bat` file.
 
-This is mostly designed for using automatic name/character/score tracking from slippi. Set the folder to your base `Slippi/` folder usually found in your `My Documents`.
+To access the dashboard open the URL shown at the end of startup after opening the bat file. The dashboard can be used as a custom browser dock or in a separate browser. On the dashboard click the `graphics` tab on the top right and copy the url of the scoreboard to put in a browser source on OBS.
+
+This is mostly designed for using automatic name/character/score tracking from slippi. Set the folder to your base `Slippi/` folder usually found in your `My Documents`. 
 
 # Updating
 Replacing the `portable-nodecg-melee-scoreboard-[version]` folder WILL get rid of any settings you had configured.
