@@ -6,8 +6,8 @@
 if (Get-Variable "REPO_NAME" -ErrorAction 'Ignore') {
     Write-Output "Preparing $REPO_NAME"
 } else {
-    Write-Output "Does not exist"
-    Throw "REPO_NAME variable does not exist"
+    Write-Output "REPO_NAME variable Does not exist"
+    $REPO_NAME='nodecg-melee-scoreboard'
 }
 
 # setup nodecg
