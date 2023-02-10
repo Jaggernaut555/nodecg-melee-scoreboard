@@ -1,6 +1,6 @@
 {
   "name": "nodecg-melee-scoreboard",
-  "version": "0.0.0",
+  "version": "1.0.1",
   "description": "A scoreboard for slippi spectating",
   "homepage": "",
   "author": {
@@ -126,7 +126,6 @@
     "build:dashboard": "parcel build \"src/dashboard/**/*.html\" --public-url /bundles/nodecg-melee-scoreboard/dashboard --target dashboard",
     "build:graphics": "parcel build \"src/graphics/**/*.html\" src/graphics/**/*.tsx --public-url /bundles/nodecg-melee-scoreboard/graphics --target graphics"
   },
-
   "repository": {
     "type": "git",
     "url": "https://github.com/Jaggernaut555/nodecg-melee-scoreboard.git"
