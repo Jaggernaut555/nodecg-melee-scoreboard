@@ -19,6 +19,6 @@ module.exports = function (nodecg: NodeCG) {
 
 function initReplicants(nodecg: NodeCG) {
 	// Some things I want to just make sure exist for use everywhere on the scoreboard
-	let matchInfo = nodecg.Replicant('matchInfo', { defaultValue: new MatchInfo() })
-	let sb = nodecg.Replicant<boolean>('hideScoreboard', { defaultValue: true });
+	nodecg.Replicant('matchInfo', { defaultValue: new MatchInfo() })
+	nodecg.Replicant<boolean>('hideScoreboard', { defaultValue: true });
 }

@@ -4,12 +4,12 @@ import { deactivateReplay, initReplay } from './replay';
 
 export function initSlippi(nodecg: NodeCG) {
     nodecg.sendMessage('slippiConnectionStatus', 'disconnected');
-    let method = nodecg.Replicant<SlippiMethod>('slippiMethod', { defaultValue: 'fileWatcher' });
+    const method = nodecg.Replicant<SlippiMethod>('slippiMethod', { defaultValue: 'fileWatcher' });
 
     let initFunc: (nodecg: NodeCG) => void = initReplay;
-    let stopFunc: () => void = deactivateReplay;;
+    let stopFunc: () => void = deactivateReplay;
 
-    method.on('change', (newValue, oldValue) => {
+    method.on('change', (newValue, ) => {
         switch (newValue) {
             case 'fileWatcher': {
                 initFunc = initReplay;

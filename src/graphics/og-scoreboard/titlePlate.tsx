@@ -11,11 +11,11 @@ interface titlePlateProps {
 function TitlePlate(props: titlePlateProps) {
     const [displayedTitle, setDisplayedTitle] = React.useState("");
     const [displayedSubtitle, setDisplayedSubtitle] = React.useState("");
-    const [animationRef, setAnimationRef] = React.useState<ReturnType<typeof anime> | undefined>();
+    const [, setAnimationRef] = React.useState<ReturnType<typeof anime> | undefined>();
     const [isHidden, setIsHidden] = React.useState(true);
     const [isAnimating, setIsAnimating] = React.useState(false);
 
-    const [subtitleAnimationRef, setSubtitleAnimationRef] = React.useState<ReturnType<typeof anime> | undefined>();
+    const [, setSubtitleAnimationRef] = React.useState<ReturnType<typeof anime> | undefined>();
     const [isHiddenSubtitle, setIsHiddenSubtitle] = React.useState(true);
     const [isAnimatingSubtitle, setIsAnimatingSubtitle] = React.useState(false);
 
@@ -34,7 +34,7 @@ function TitlePlate(props: titlePlateProps) {
                     easing: 'linear',
                     translateY: [40, 0],
                     duration: 1000,
-                    complete: function (a) {
+                    complete: function () {
                         setIsAnimating(false);
                     }
                 })
@@ -53,7 +53,7 @@ function TitlePlate(props: titlePlateProps) {
                     easing: 'linear',
                     translateY: [40, 0],
                     duration: 700,
-                    complete: function (a) {
+                    complete: function () {
                         setDisplayedTitle(props.title);
                         setAnimationRef(anime({
                             // show score
@@ -61,7 +61,7 @@ function TitlePlate(props: titlePlateProps) {
                             easing: 'linear',
                             translateY: [0, 40],
                             duration: 700,
-                            complete: function (a) {
+                            complete: function () {
                                 setIsAnimating(false);
                                 setIsHidden(false);
                             }
@@ -79,7 +79,7 @@ function TitlePlate(props: titlePlateProps) {
                 easing: 'linear',
                 translateY: [0, 40],
                 duration: 1000,
-                complete: function (a) {
+                complete: function () {
                     setIsAnimating(false);
                     setIsHidden(false);
                 }
@@ -102,7 +102,7 @@ function TitlePlate(props: titlePlateProps) {
                     easing: 'linear',
                     translateY: [40, 0],
                     duration: 1000,
-                    complete: function (a) {
+                    complete: function () {
                         setIsAnimatingSubtitle(false);
                     }
                 })
@@ -121,7 +121,7 @@ function TitlePlate(props: titlePlateProps) {
                     easing: 'linear',
                     translateY: [40, 0],
                     duration: 700,
-                    complete: function (a) {
+                    complete: function () {
                         setDisplayedSubtitle(props.subtitle);
                         setSubtitleAnimationRef(anime({
                             // show score
@@ -129,7 +129,7 @@ function TitlePlate(props: titlePlateProps) {
                             easing: 'linear',
                             translateY: [0, 40],
                             duration: 700,
-                            complete: function (a) {
+                            complete: function () {
                                 setIsAnimatingSubtitle(false);
                                 setIsHiddenSubtitle(false);
                             }
@@ -148,7 +148,7 @@ function TitlePlate(props: titlePlateProps) {
                     easing: 'linear',
                     translateY: [0, 40],
                     duration: 1000,
-                    complete: function (a) {
+                    complete: function () {
                         setIsAnimatingSubtitle(false);
                         setIsHiddenSubtitle(false);
                     }

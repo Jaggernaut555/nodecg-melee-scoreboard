@@ -46,7 +46,7 @@ function App() {
                 <label>Subtitle</label>
                 <input type="text" value={displayedSubtitle} onKeyDown={handlePressEnter} onChange={e => setDisplayedSubtitle(e.target.value)}></input>
             </div>
-            <button onClick={(e) => updateTitleInfo()}>update</button>
+            <button onClick={updateTitleInfo}>update</button>
         </div>
     );
 }

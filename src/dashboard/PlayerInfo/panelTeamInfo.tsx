@@ -1,4 +1,4 @@
-import React, { Dispatch, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Bracket, PlayerInfo, TeamInfo } from "../../types/index.d";
 import PanelPlayerInfo from "./panelPlayerInfo";
 
@@ -17,15 +17,15 @@ function PanelTeamInfo(props: PanelTeamInfoProps) {
     // TODO: limit this to max 3 players or something
     // unless want to support crew battle or something
     const addPlayer = () => {
-        let pi = new PlayerInfo();
-        let teamInfo = props.info;
+        const pi = new PlayerInfo();
+        const teamInfo = props.info;
         // console.log(teamInfo);
         teamInfo.players.push(pi);
         props.updateInfo(teamInfo, props.index)
     }
 
     const updatePlayer = (pi: PlayerInfo, index: number) => {
-        let teamInfo = props.info;
+        const teamInfo = props.info;
         teamInfo.players[index] = pi;
         props.updateInfo(teamInfo, props.index);
     }
@@ -35,20 +35,20 @@ function PanelTeamInfo(props: PanelTeamInfoProps) {
     }
 
     const updateScore = () => {
-        let teamInfo = props.info;
+        const teamInfo = props.info;
         teamInfo.score = teamScore;
         props.updateInfo(teamInfo, props.index)
     }
 
     const updateBracket = () => {
-        let teamInfo = props.info;
+        const teamInfo = props.info;
         teamInfo.bracket = teamBracket;
         props.updateInfo(teamInfo, props.index)
     }
 
-    const removePlayer = () => {
-        // TODO: remove player
-    }
+    // const removePlayer = () => {
+    //     // TODO: remove player
+    // }
 
     useEffect(() => {
         console.log("updating display");
@@ -89,6 +89,6 @@ function PanelTeamInfo(props: PanelTeamInfoProps) {
             </div>
         </div>
     )
-};
+}
 
 export default PanelTeamInfo;

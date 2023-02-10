@@ -1,16 +1,14 @@
-import { NodeCG } from "nodecg-types/types/server";
-
 export class PlayerInfo {
-    name: string = "";
-    code: string = "";
-    character: string = "Fox";
-    color: string = "default";
-    port: number = 0;
+    name = "";
+    code = "";
+    character = "Fox";
+    color = "default";
+    port = 0;
 }
 
 export class TeamInfo {
     players: PlayerInfo[] = [];
-    score: number = 0;
+    score = 0;
     bracket: Bracket = '[W]';
 }
 

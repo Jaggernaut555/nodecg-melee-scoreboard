@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useReplicant } from 'use-nodecg';
-import anime from 'animejs';
 import './og-scoreboard.css';
 import PlayerName from './PlayerPlates/playerName';
 import PlayerScore from './PlayerPlates/playerScore';
@@ -9,7 +8,7 @@ import PlayerBracket from './PlayerPlates/playerBracket';
 import TitlePlate from './titlePlate';
 
 function App() {
-    const [matchInfo, setMatchInfo] = useReplicant<MatchInfo>('matchInfo', new MatchInfo());
+    const [matchInfo, ] = useReplicant<MatchInfo>('matchInfo', new MatchInfo());
     
     const [team1Info, setTeam1Info] = React.useState<TeamInfo>(new TeamInfo());
     const [team2Info, setTeam2Info] = React.useState<TeamInfo>(new TeamInfo());
@@ -17,9 +16,9 @@ function App() {
     const [player1Info, setPlayer1Info] = React.useState<PlayerInfo>(new PlayerInfo());
     const [player2Info, setPlayer2Info] = React.useState<PlayerInfo>(new PlayerInfo());
 
-    const [hideScoreboard, setHideScoreboard] = useReplicant<boolean>('hideScoreboard', true);
-    const [title, setTitle] = useReplicant<string>("TournamentTitle", "");
-    const [subtitle, setSubtitle] = useReplicant<string>("TournamentSubtitle", "");
+    const [hideScoreboard, ] = useReplicant<boolean>('hideScoreboard', true);
+    const [title, ] = useReplicant<string>("TournamentTitle", "");
+    const [subtitle, ] = useReplicant<string>("TournamentSubtitle", "");
 
     React.useEffect(() => {
         if (matchInfo.teams.length == 2) {

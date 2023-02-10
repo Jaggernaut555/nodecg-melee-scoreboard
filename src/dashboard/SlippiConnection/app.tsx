@@ -1,8 +1,8 @@
 import React from "react";
-import { useListenFor, useReplicant } from 'use-nodecg';
+import { useReplicant } from 'use-nodecg';
 import { ConnectionStatus, SlippiMethod } from "../../types/index.d";
 // This is needed for some reason to get nodecg
-import NodeCG from "nodecg-types/types/browser";
+import NodeCG from "nodecg-types/types/browser"; // eslint-disable-line
 
 function App() {
     // this too
@@ -14,7 +14,7 @@ function App() {
     const [replayFolder, setReplayFolder] = useReplicant<string>("slippiReplayFolder", "");
     const [displayedReplayFolder, setDisplayedReplayFolder] = React.useState<string>(replayFolder);
 
-    const [connectionStatus, setConnectionStatus] = useReplicant<ConnectionStatus>('slippiConnectionStatus','disconnected');
+    const [connectionStatus,] = useReplicant<ConnectionStatus>('slippiConnectionStatus','disconnected');
 
     // radio buttons
     // Realtime or Directory

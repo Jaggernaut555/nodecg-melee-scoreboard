@@ -46,7 +46,7 @@ export function initAPI(init_nodecg: NodeCG) {
     })
 
     app.get('/api/v1/scoreboard', (req, res) => {
-        let val = nodecg.readReplicant<boolean>('hideScoreboard');
+        const val = nodecg.readReplicant<boolean>('hideScoreboard');
         res.send(val != true ? "on" : "off");
     })
 
@@ -57,11 +57,11 @@ export function initAPI(init_nodecg: NodeCG) {
 // this could probably be in a helper method somewhere and re-used by the dashboard
 // instead of duplicate code functionality
 function swapPlayers() {
-    let matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
+    const matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
 
     if (matchInfo.value && matchInfo.value.teams && matchInfo.value.teams.length == 2) {
-        let temp1 = copyTeamInfo(matchInfo.value.teams[0]);
-        let temp2 = copyTeamInfo(matchInfo.value.teams[1]);
+        const temp1 = copyTeamInfo(matchInfo.value.teams[0]);
+        const temp2 = copyTeamInfo(matchInfo.value.teams[1]);
 
         matchInfo.value.teams[0] = temp2;
         matchInfo.value.teams[1] = temp1;
@@ -72,7 +72,7 @@ function swapPlayers() {
 }
 
 function copyTeamInfo(info: TeamInfo): TeamInfo {
-    let temp = new TeamInfo();
+    const temp = new TeamInfo();
     
     info.players.forEach(p => {
         temp.players.push(copyPlayerInfo(p));
@@ -85,7 +85,7 @@ function copyTeamInfo(info: TeamInfo): TeamInfo {
 }
 
 function copyPlayerInfo(info: PlayerInfo): PlayerInfo {
-    let temp = new PlayerInfo();
+    const temp = new PlayerInfo();
     temp.character = info.character;
     temp.code = info.code;
     temp.color = info.color;
@@ -95,7 +95,7 @@ function copyPlayerInfo(info: PlayerInfo): PlayerInfo {
 }
 
 function updateScore(dto: scoreDTO) {
-    let matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
+    const matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
 
     if (!matchInfo.value || !matchInfo.value.teams || matchInfo.value.teams.length <= dto.team || !matchInfo.value.teams[dto.team]) {
         return { error: "team does not exist" };
@@ -119,7 +119,7 @@ function updateScore(dto: scoreDTO) {
 }
 
 function updateBracket(dto: bracketDTO) {
-    let matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
+    const matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
 
     if (!matchInfo.value || !matchInfo.value.teams || matchInfo.value.teams.length <= dto.team || !matchInfo.value.teams[dto.team]) {
         return { error: "team does not exist" };
@@ -145,7 +145,7 @@ function updateBracket(dto: bracketDTO) {
 }
 
 function resetScore() {
-    let matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
+    const matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
 
     matchInfo.value.teams.forEach((t, i) => {
         matchInfo.value.teams[i].score = 0;
@@ -153,7 +153,7 @@ function resetScore() {
 }
 
 function toggleScoreboard() {
-    let sb = nodecg.Replicant<boolean>('hideScoreboard');
+    const sb = nodecg.Replicant<boolean>('hideScoreboard');
 
     sb.value = !sb.value;
 }

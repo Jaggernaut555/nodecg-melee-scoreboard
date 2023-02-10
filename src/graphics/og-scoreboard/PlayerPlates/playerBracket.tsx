@@ -10,7 +10,7 @@ interface playerNameProps {
 
 function PlayerName(props: playerNameProps) {
     const [displayedBracket, setDisplayedBracket] = React.useState("");
-    const [animationRef, setAnimationRef] = React.useState<ReturnType<typeof anime> | undefined>();
+    const [, setAnimationRef] = React.useState<ReturnType<typeof anime> | undefined>();
     const [isHidden, setIsHidden] = React.useState(true);
     const [isAnimating, setIsAnimating] = React.useState(false);
 
@@ -29,7 +29,7 @@ function PlayerName(props: playerNameProps) {
                     easing: 'linear',
                     translateY: [40, 0],
                     duration: 1000,
-                    complete: function (a) {
+                    complete: function () {
                         setIsAnimating(false);
                     }
                 })
@@ -48,7 +48,7 @@ function PlayerName(props: playerNameProps) {
                     easing: 'linear',
                     translateY: [40, 0],
                     duration: 700,
-                    complete: function (a) {
+                    complete: function () {
                         setDisplayedBracket(props.bracket);
                         if (props.bracket != '[W]') {
                             console.log("is in losers");
@@ -58,7 +58,7 @@ function PlayerName(props: playerNameProps) {
                                 easing: 'linear',
                                 translateY: [0, 40],
                                 duration: 700,
-                                complete: function (a) {
+                                complete: function () {
                                     setIsAnimating(false);
                                     setIsHidden(false);
                                 }
@@ -80,7 +80,7 @@ function PlayerName(props: playerNameProps) {
                 easing: 'linear',
                 translateY: [0, 40],
                 duration: 1000,
-                complete: function (a) {
+                complete: function () {
                     setIsAnimating(false);
                     setIsHidden(false);
                 }

@@ -1,45 +1,41 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useReplicant } from 'use-nodecg';
-import { Bracket, MatchInfo, PlayerInfo, TeamInfo } from "../../types/index.d";
-import PanelPlayerInfo from "./panelPlayerInfo";
+import { MatchInfo, TeamInfo } from "../../types/index.d";
 import PanelTeamInfo from "./panelTeamInfo";
 
 function App() {
     const [matchInfo, setMatchInfo] = useReplicant<MatchInfo>('matchInfo', new MatchInfo());
 
-    const updatePlayerInfo = (e: React.MouseEvent) => {
-        // TODO:
-        // use this instead of live updating?
-        // setPlayer1Info(player1DisplayedInfo);
-        // setPlayer2Info(player2DisplayedInfo);
-    };
+    // const updatePlayerInfo = (e: React.MouseEvent) => {
+    //     // TODO:
+    //     // use this instead of live updating?
+    //     // setPlayer1Info(player1DisplayedInfo);
+    //     // setPlayer2Info(player2DisplayedInfo);
+    // };
 
     const updateTeamInfo = (ti: TeamInfo, index: number) => {
-        let newTeamInfo = matchInfo;
+        // Modifying an existing team doesn't require using a temp variable
         matchInfo.teams[index] = ti;
-        setMatchInfo(newTeamInfo);
     }
 
     const addTeam = () => {
-        let ti = new TeamInfo();
-        let newMatchInfo = matchInfo;
+        const ti = new TeamInfo();
+        const newMatchInfo = matchInfo;
         newMatchInfo.teams.push(ti);
         setMatchInfo(newMatchInfo);
     }
 
     const removeTeam = (index: number) => {
-        let newMatchInfo = matchInfo;
-        newMatchInfo.teams = newMatchInfo.teams.splice(index, 1);
+        const newMatchInfo = matchInfo;
+        newMatchInfo.teams = matchInfo.teams.splice(index, 1);
         if (!newMatchInfo.teams) {
             newMatchInfo.teams = [];
         }
-        console.log(newMatchInfo);
-        // setMatchInfo(newMatchInfo);
     }
 
-    const swapPlayers = () => {
-        // send message to the function in extensions/API/api.ts
-    };
+    // const swapPlayers = () => {
+    //     // send message to the function in extensions/API/api.ts
+    // };
 
     return (
         <div>
@@ -52,7 +48,7 @@ function App() {
                 )
             })}
             <button disabled={matchInfo.teams.length >= 2} onClick={addTeam}>Add Team</button>
-            <button onClick={updatePlayerInfo}>update</button>
+            {/* <button onClick={updatePlayerInfo}>update</button> */}
             {/* <button onClick={swapPlayers}>swap</button> */}
         </div>
     );

@@ -1,4 +1,4 @@
-import { GameEndType, GameStartType, SlippiGame, characters, PlayerType, PreFrameUpdateType, PostFrameUpdateType } from "@slippi/slippi-js";
+import { GameStartType, SlippiGame, characters, PlayerType } from "@slippi/slippi-js";
 import _ from 'lodash';
 import { NodeCG } from "nodecg-types/types/server";
 import chokidar from 'chokidar';
@@ -12,13 +12,13 @@ let currentGameWatcher: chokidar.FSWatcher;
 let replayWatcher: chokidar.FSWatcher | null;
 
 // TODO: can make this an interact-able setting
-let testingMode = false;
+const testingMode = false;
 
 export async function initReplay(nodecg_init: NodeCG) {
     nodecg = nodecg_init;
-    let slippiFolder = nodecg.Replicant<string>('slippiReplayFolder').value;
-    let connectionStatus = nodecg.Replicant<ConnectionStatus>('slippiConnectionStatus');
-    
+    const slippiFolder = nodecg.Replicant<string>('slippiReplayFolder').value;
+    const connectionStatus = nodecg.Replicant<ConnectionStatus>('slippiConnectionStatus');
+
     nodecg.log.info("Setting up replay watcher");
 
     if (!slippiFolder || !path.isAbsolute(slippiFolder)) {
@@ -47,13 +47,13 @@ export async function deactivateReplay() {
         replayWatcher.close();
     }
     replayWatcher = null;
-    let connectionStatus = nodecg.Replicant<ConnectionStatus>('slippiConnectionStatus');
+    const connectionStatus = nodecg.Replicant<ConnectionStatus>('slippiConnectionStatus');
     connectionStatus.value = 'disconnected';
 }
 
-function watchForNewReplays(path: string, stats: string) {
+function watchForNewReplays(path: string) {
     nodecg.log.debug("New game found")
-    let game = new SlippiGame(path, { processOnTheFly: true });
+    const game = new SlippiGame(path, { processOnTheFly: true });
 
     // Don't track games that are already over
     const end = game.getGameEnd();
@@ -63,7 +63,7 @@ function watchForNewReplays(path: string, stats: string) {
     }
 
     currentGame = game;
-    let gamePath = currentGame.getFilePath();
+    const gamePath = currentGame.getFilePath();
     nodecg.log.debug(gamePath);
 
     try {
@@ -104,10 +104,10 @@ function getPlayerInfo(player: PlayerType): PlayerInfo | null {
     if (player.characterId === null || player.characterColor === null) {
         return null;
     }
-    let character = characters.getCharacterShortName(player.characterId);
-    let color = characters.getCharacterColorName(player.characterId, player.characterColor);
+    const character = characters.getCharacterShortName(player.characterId);
+    const color = characters.getCharacterColorName(player.characterId, player.characterColor);
 
-    let p = new PlayerInfo();
+    const p = new PlayerInfo();
     p.character = character;
     p.color = color;
     p.code = player.connectCode;
@@ -164,25 +164,25 @@ async function setNames(gameSettings: GameStartType) {
     else {
         // Only 2 players
 
-        let teams: TeamInfo[] = [];
+        const teams: TeamInfo[] = [];
 
-        for(let player of gameSettings.players) {
-            let p = getPlayerInfo(player);
+        for (const player of gameSettings.players) {
+            const p = getPlayerInfo(player);
 
             if (p) {
-                let t = new TeamInfo();
+                const t = new TeamInfo();
                 t.players.push(p);
                 teams.push(t);
             }
         }
 
 
-        let matchInfo = getMatchInfo();
+        const matchInfo = getMatchInfo();
 
         // here will always be one team per new player
-        let allPlayersExist = matchInfo.teams.every((ot) => {
-            let onePlayerTeam = ot.players.length == 1;
-            let hasPlayer = teams.some((nt) => nt.players[0].code == ot.players[0].code);
+        const allPlayersExist = matchInfo.teams.every((ot) => {
+            const onePlayerTeam = ot.players.length == 1;
+            const hasPlayer = teams.some((nt) => nt.players[0].code == ot.players[0].code);
             return onePlayerTeam && hasPlayer;
         })
 
@@ -191,7 +191,10 @@ async function setNames(gameSettings: GameStartType) {
 
             teams.forEach(team => {
                 // we just checked so these must exist
-                let oldTeam = matchInfo.teams.find(t => t.players[0].code == team.players[0].code)!;
+                const oldTeam = matchInfo.teams.find(t => t.players[0].code == team.players[0].code);
+                if (!oldTeam) {
+                    return;
+                }
                 team.score = oldTeam.score;
                 team.bracket = oldTeam.bracket;
             })
@@ -203,11 +206,11 @@ async function setNames(gameSettings: GameStartType) {
         matchInfo.teams = teams;
         updateMatchInfo(matchInfo);
     }
-    
+
     if (testingMode) {
-        let winnerIndex = determineWinner(currentGame);
-        
-        let matchInfo = getMatchInfo();
+        const winnerIndex = determineWinner(currentGame);
+
+        const matchInfo = getMatchInfo();
         matchInfo.teams[winnerIndex].score += 1;
         updateMatchInfo(matchInfo);
     }
@@ -215,20 +218,20 @@ async function setNames(gameSettings: GameStartType) {
 
 
 // This is what waits for changes until the game ends
-function GameListener(event: string) {
+function GameListener() {
     try {
         const end = currentGame.getGameEnd();
         if (end && !testingMode) {
             nodecg.log.debug("Game ended");
 
-            let winnerIndex = determineWinner(currentGame);
+            const winnerIndex = determineWinner(currentGame);
 
             if (winnerIndex == -1) {
                 nodecg.log.debug("no winner found");
                 return;
             }
 
-            let matchInfo = getMatchInfo();
+            const matchInfo = getMatchInfo();
             matchInfo.teams[winnerIndex].score += 1;
             updateMatchInfo(matchInfo);
             currentGameWatcher.off('change', GameListener);
@@ -242,8 +245,8 @@ function GameListener(event: string) {
 /// Return index of winner (0/1) or unknown (-1)
 export function determineWinner(game: SlippiGame): number {
     try {
-        let gameSettings = game.getSettings();
-        let end = game.getGameEnd();
+        const gameSettings = game.getSettings();
+        const end = game.getGameEnd();
 
 
         if (!gameSettings || !end) {
@@ -298,7 +301,7 @@ export function determineWinner(game: SlippiGame): number {
                 return -1;
         }
     }
-    catch (err: any) {
+    catch (err) {
         nodecg.log.error("Error determining winner");
         nodecg.log.error(err);
     }
@@ -359,29 +362,11 @@ export function determineWinner(game: SlippiGame): number {
 // Should split players into teams
 // team will have players and score
 
-function updatePlayerReplicants(players: PlayerInfo[]): void {
-    // right now I have 2 hard coded ones that need to be updated
-
-    let p1 = nodecg.Replicant<PlayerInfo>('player1Info');
-    let p2 = nodecg.Replicant<PlayerInfo>('player2Info');
-
-    p1.value = players[0];
-    p2.value = players[1];
-}
-
-function getPlayerReplicants(): PlayerInfo[] {
-    let p1 = nodecg.readReplicant<PlayerInfo>('player1Info');
-    let p2 = nodecg.readReplicant<PlayerInfo>('player2Info');
-
-    return [p1, p2];
-}
-
 function updateMatchInfo(matchInfo: MatchInfo): void {
-    let mi = nodecg.Replicant<MatchInfo>('matchInfo');
+    const mi = nodecg.Replicant<MatchInfo>('matchInfo');
     mi.value = matchInfo;
 }
 
 function getMatchInfo() {
-    let mi = nodecg.readReplicant<MatchInfo>('matchInfo');
-    return mi;
+    return nodecg.readReplicant<MatchInfo>('matchInfo');
 }

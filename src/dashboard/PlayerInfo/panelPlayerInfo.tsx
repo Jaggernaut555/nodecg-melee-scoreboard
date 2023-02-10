@@ -1,5 +1,5 @@
-import React, { Dispatch, useEffect, useState } from "react";
-import { Bracket, PlayerInfo, TeamInfo } from "../../types/index.d";
+import React, { useEffect, useState } from "react";
+import { PlayerInfo } from "../../types/index.d";
 
 const characterOptions = ['Bowser', 'DK', 'Doc', 'Falco', 'Falcon', 'Fox', 'Ganon', 'G&W', 'ICs', 'Kirby', 'Link', 'Luigi', 'Mario', 'Marth', 'Mewtwo', 'Ness', 'Peach', 'Pichu', 'Pikachu', 'Puff', 'Roy', 'Samus', 'Sheik', 'YLink', 'Yoshi', 'Zelda']
 
