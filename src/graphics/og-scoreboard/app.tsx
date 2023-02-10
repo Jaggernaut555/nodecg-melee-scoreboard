@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useReplicant } from 'use-nodecg';
 import anime from 'animejs';
-import './old-scoreboard.css';
+import './og-scoreboard.css';
 import PlayerName from './PlayerPlates/playerName';
 import PlayerScore from './PlayerPlates/playerScore';
 import { MatchInfo, PlayerInfo, TeamInfo } from "../../types/index.d";
@@ -17,24 +17,9 @@ function App() {
     const [player1Info, setPlayer1Info] = React.useState<PlayerInfo>(new PlayerInfo());
     const [player2Info, setPlayer2Info] = React.useState<PlayerInfo>(new PlayerInfo());
 
-    // const [player1Info, setPlayer1Info] = useReplicant<PlayerInfo>('player1Info', new PlayerInfo());
-    // const [player2Info, setPlayer2Info] = useReplicant<PlayerInfo>('player2Info', new PlayerInfo());
     const [hideScoreboard, setHideScoreboard] = useReplicant<boolean>('hideScoreboard', true);
     const [title, setTitle] = useReplicant<string>("TournamentTitle", "");
     const [subtitle, setSubtitle] = useReplicant<string>("TournamentSubtitle", "");
-
-    React.useLayoutEffect(() => {
-        // setTimeout(() => {
-        //     const allWithClass = Array.from(
-        //         document.getElementsByClassName('hidden')
-        //     );
-        //     console.log(allWithClass);
-        //     allWithClass.forEach((e) => {
-        //         e.classList.remove('hidden');
-        //         console.log(`removing from ${e}`)
-        //     })
-        // }, 2000)
-    });
 
     React.useEffect(() => {
         if (matchInfo.teams.length == 2) {
@@ -49,8 +34,6 @@ function App() {
                 setPlayer2Info(matchInfo.teams[1].players[0]);
             }
         }
-        
-
     }, [matchInfo])
 
 
