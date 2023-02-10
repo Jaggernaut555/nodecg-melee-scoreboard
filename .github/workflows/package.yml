@@ -13,6 +13,10 @@ jobs:
     name: Build and pack
     runs-on: windows-latest
     steps:
+      - run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+        name: config git line endings
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
