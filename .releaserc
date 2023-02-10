@@ -17,7 +17,7 @@
         [
             "@semantic-release/exec",
             {
-                "publishCmd": "prepare-nodecg.ps1",
+                "publishCmd": "pwsh prepare-nodecg.ps1",
                 "shell": "pwsh",
                 "execCwd": "scripts"
             }
