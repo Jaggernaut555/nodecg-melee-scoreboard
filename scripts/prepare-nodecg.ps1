@@ -1,5 +1,8 @@
 # Script to run for release
 
+# Expecting to be run from the `scripts/` folder
+Set-location ..
+
 # TODO:
 # I have no idea if the variable from the github workflow will show up here
 # If it is fine then this can be removed
