@@ -47,7 +47,7 @@ Set both scores to 0
 
 ### Swap players
 Swap player positions on the right/left side of the scoreboard
-- Title: Anything you swap
+- Title: Anything you want
 - Request Type: Post
 - API URL: http://localhost:9090/api/v1/swap
 
