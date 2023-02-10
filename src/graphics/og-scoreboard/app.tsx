@@ -20,8 +20,8 @@ function App() {
     // const [player1Info, setPlayer1Info] = useReplicant<PlayerInfo>('player1Info', new PlayerInfo());
     // const [player2Info, setPlayer2Info] = useReplicant<PlayerInfo>('player2Info', new PlayerInfo());
     const [hideScoreboard, setHideScoreboard] = useReplicant<boolean>('hideScoreboard', true);
-    const [title, setTitle] = useReplicant<string>("TournamentTitle", "Main Title");
-    const [subtitle, setSubtitle] = useReplicant<string>("TournamentSubtitle", "Subtitle");
+    const [title, setTitle] = useReplicant<string>("TournamentTitle", "");
+    const [subtitle, setSubtitle] = useReplicant<string>("TournamentSubtitle", "");
 
     React.useLayoutEffect(() => {
         // setTimeout(() => {

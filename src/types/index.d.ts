@@ -3,7 +3,7 @@ import { NodeCG } from "nodecg-types/types/server";
 export class PlayerInfo {
     name: string = "";
     code: string = "";
-    character: string = "fox";
+    character: string = "Fox";
     color: string = "default";
     port: number = 0;
 }

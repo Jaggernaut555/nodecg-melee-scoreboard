@@ -3,8 +3,8 @@ import { useReplicant } from 'use-nodecg';
 
 function App() {
     const [hideScoreboard, setHideScoreboard] = useReplicant<boolean>('hideScoreboard', true);
-    const [title, setTitle] = useReplicant<string>("TournamentTitle", "Main Title");
-    const [subtitle, setSubtitle] = useReplicant<string>("TournamentSubtitle", "Subtitle");
+    const [title, setTitle] = useReplicant<string>("TournamentTitle", "");
+    const [subtitle, setSubtitle] = useReplicant<string>("TournamentSubtitle", "");
 
     const [displayedHideScoreboard, setDisplayedHideScoreboard] = useState<boolean>(hideScoreboard);
     const [displayedTitle, setDisplayedTitle] = useState<string>(title);
