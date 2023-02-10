@@ -6,12 +6,9 @@
         "@semantic-release/commit-analyzer",
         "@semantic-release/release-notes-generator",
         [
-            "@semantic-release/git",
+            "@semantic-release/npm",
             {
-                "assets": [
-                    "package.json",
-                    "package-lock.json"
-                ]
+                "npmPublish": false
             }
         ],
         [
@@ -27,6 +24,15 @@
             {
                 "assets": [
                     "*.zip"
+                ]
+            }
+        ],
+        [
+            "@semantic-release/git",
+            {
+                "assets": [
+                    "package.json",
+                    "package-lock.json"
                 ]
             }
         ]
