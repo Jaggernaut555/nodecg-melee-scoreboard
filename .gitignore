@@ -1,0 +1,11 @@
+node_modules
+coverage
+bower_components
+
+# Ignore compiled directories
+/extension
+/graphics
+/dashboard
+.parcel-cache
+.cache
+.vscode

@@ -1,0 +1,161 @@
+body {
+    margin: 0px;
+    color: white;
+    font-family: Tahoma;
+    text-shadow: 2px 2px black;
+    font-size: 24px;
+}
+
+.colorB {
+    background: rgb(0, 0, 0);
+}
+
+.color1 {
+    background: rgb(255, 110, 184);
+}
+
+.color2 {
+    background: rgb(44, 19, 164);
+}
+
+.color3 {
+    background: rgb(195, 63, 110);
+}
+
+img {
+    vertical-align: middle;
+}
+
+.sc_titleBox {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    z-index: -2;
+}
+
+.title {
+    margin: 0 auto;
+    width: 20%;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+
+    clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%);
+}
+
+.sc_subtitleBox {
+    width: 100%;
+    position: relative;
+    /* top: -40px; */
+    z-index: -2;
+}
+
+.subtitle {
+    margin: 0 auto;
+    width: 18%;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+
+    clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%);
+}
+
+.players {
+    position: absolute;
+    width: 400px;
+    max-width: 400px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    z-index: 0;
+
+    clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%);
+}
+
+.scaling {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    /* position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    white-space: nowrap;
+    display: ruby; */
+}
+
+img.icon {
+    width: 24px;
+    height: 24px;
+}
+
+.players.p1 {
+    left: 240px;
+}
+
+.players.p2 {
+    right: 240px;
+}
+
+.scores {
+    position: absolute;
+    width: 100px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    z-index: -1;
+
+    clip-path: polygon(0% 0%, 100% 0%, 75% 100%, 25% 100%);
+}
+
+.scores.s1 {
+    left: 600px;
+}
+
+.scores.s2 {
+    right: 600px;
+}
+
+.sets {
+    position: absolute;
+    width: 125px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    z-index: -1;
+
+    clip-path: polygon(0% 0%, 100% 0%, 85% 100%, 15% 100%);
+}
+
+.sets.p1 {
+    left: 145px;
+}
+
+.sets.p2 {
+    right: 145px;
+}
+
+.WL {
+    position: absolute;
+    width: 125px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    z-index: -1;
+
+    clip-path: polygon(0% 0%, 100% 0%, 85% 100%, 15% 100%);
+}
+
+.WL.p1 {
+    left: 145px;
+}
+
+.WL.p2 {
+    right: 145px;
+}
+
+.hidden {
+    top: -40px;
+}

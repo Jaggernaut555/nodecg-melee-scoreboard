@@ -1,0 +1,126 @@
+{
+  "name": "melee-scoreboard",
+  "version": "0.0.0",
+  "description": "A scoreboard for slippi spectating",
+  "homepage": "",
+  "author": {
+    "name": "Jaggernaut555",
+    "email": "jaggernaut@jaggernaut.ca",
+    "url": "https://github.com/Jaggernaut555"
+  },
+  "files": [
+    "dashboard",
+    "graphics",
+    "extension.js",
+    "extension",
+    "images"
+  ],
+  "keywords": [
+    "nodecg-bundle"
+  ],
+  "targets": {
+    "extension": {
+      "distDir": "./extension",
+      "engines": {
+        "node": ">=16"
+      }
+    },
+    "graphics": {
+      "distDir": "./graphics",
+      "engines": {
+        "browsers": "last 2 chrome versions"
+      }
+    },
+    "dashboard": {
+      "distDir": "./dashboard",
+      "engines": {
+        "browsers": "last 2 chrome versions"
+      }
+    }
+  },
+  "browserslist": "last 2 chrome versions",
+  "nodecg": {
+    "compatibleRange": "^1.1.1",
+    "mount": [
+      {
+        "directory": "images",
+        "endpoint": "images"
+      }
+    ],
+    "dashboardPanels": [
+      {
+        "name": "Player Info",
+        "title": "Player Info",
+        "file": "PlayerInfoPanel.html",
+        "fullbleed": false,
+        "headerColor": "#525F78",
+        "width": 4
+      },
+      {
+        "name": "Tournament Info",
+        "title": "Tournament Info",
+        "file": "TournamentInfoPanel.html",
+        "fullbleed": false,
+        "width": 3
+      },
+      {
+        "name": "Slippi Connection",
+        "title": "Slippi Connection",
+        "file": "SlippiConnectionPanel.html",
+        "fullbleed": false,
+        "headerColor": "#525F78",
+        "width": 3
+      }
+    ],
+    "graphics": [
+      {
+        "name": "og-scoreboard",
+        "file": "og-scoreboard.html",
+        "width": 1920,
+        "height": 1080,
+        "singleInstance": false
+      }
+    ]
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@parcel/transformer-typescript-tsc": "^2.8.3",
+    "@types/animejs": "^3.1.7",
+    "@types/lodash": "^4.14.191",
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "assert": "^2.0.0",
+    "buffer": "^5.7.1",
+    "crypto-browserify": "^3.12.0",
+    "nodecg-types": "^1.9.0",
+    "npm-run-all": "^4.1.5",
+    "os-browserify": "^0.3.0",
+    "parcel": "^2.8.3",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "typescript": "^4.9.4",
+    "util": "^0.12.5"
+  },
+  "dependencies": {
+    "@slippi/slippi-js": "^6.6.0",
+    "@vinceau/slp-realtime": "^3.3.0",
+    "animejs": "^3.2.1",
+    "chokidar": "^3.5.3",
+    "lodash": "^4.17.21",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "use-nodecg": "^0.4.0"
+  },
+  "scripts": {
+    "check": "tsc --noEmit",
+    "watch": "npm-run-all --parallel watch:**",
+    "watch:extension": "parcel watch src/extension/*.ts --no-hmr --target extension",
+    "watch:dashboard": "npx parcel watch \"src/dashboard/**/*.html\" --public-url /bundles/melee-scoreboard/dashboard --no-hmr --target dashboard",
+    "watch:graphics": "parcel watch \"src/graphics/**/*.html\" src/graphics/**/*.tsx --public-url /bundles/melee-scoreboard/graphics --no-hmr --target graphics",
+    "build": "npm-run-all --parallel build:**",
+    "build:extension": "parcel build src/extension/*.ts --target node",
+    "build:dashboard": "parcel build \"src/dashboard/**/*.html\" --public-url /bundles/new-melee-scoreboard/dashboard --target dashboard",
+    "build:graphics": "parcel build \"src/graphics/**/*.html\" src/graphics/**/*.tsx --public-url /bundles/melee-scoreboard/graphics --target graphics"
+  }
+}
