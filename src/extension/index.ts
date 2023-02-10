@@ -4,8 +4,9 @@ import { initAPI } from './API/api';
 import { MatchInfo } from '../types/index.d';
 
 module.exports = function (nodecg: NodeCG) {
-	nodecg.log.info(`To edit me, open "${__filename}" in your favorite text editor or IDE.`);
-	nodecg.log.info('Visit https://nodecg.com for full documentation.');
+	nodecg.log.info("Get the scoreboard URL from the graphics tab and add it to your OBS Scene");
+	nodecg.log.info("The dashboard can be added as an OBS custom browser dock");
+	nodecg.log.info("This must be running before OBS is launched. Otherwise the scoreboard source will need to be refreshed in OBS.");
 	nodecg.log.info('Good luck!');
 
 	initReplicants(nodecg);
