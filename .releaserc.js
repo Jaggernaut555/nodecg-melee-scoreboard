@@ -1,3 +1,4 @@
+export default
 {
     "branches": [
         "main"
@@ -14,7 +15,7 @@
         [
             "@semantic-release/exec",
             {
-                "publishCmd": "pwsh prepare-nodecg.ps1",
+                "publishCmd": `pwsh prepare-nodecg.ps1 -version \${nextRelease.version} -bundleName ${process.env.REPO_NAME}`,
                 "shell": "pwsh",
                 "execCwd": "scripts"
             }
