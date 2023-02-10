@@ -11,7 +11,6 @@
 // const stream = new SlpLiveStream(connectionType);
 // const realtime = new SlpRealTime();
 
-
 // // TODO:
 // // implement this
 // // useful for scoring own games or console mirroring

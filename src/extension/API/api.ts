@@ -4,156 +4,170 @@ import { MatchInfo, PlayerInfo, TeamInfo } from "../../types/index.d";
 let nodecg: NodeCG;
 
 interface scoreDTO {
-    team: number;
-    operation: "add" | "subtract" | 'get';
+  team: number;
+  operation: "add" | "subtract" | "get";
 }
 
 interface bracketDTO {
-    team: number;
-    bracket: 'toggle' | 'get';
+  team: number;
+  bracket: "toggle" | "get";
 }
 
 // This is mostly for controlling quick actions with the stream deck
 // But other things could use this api too
 export function initAPI(init_nodecg: NodeCG) {
-    nodecg = init_nodecg;
-    nodecg.log.info("Setting up API");
+  nodecg = init_nodecg;
+  nodecg.log.info("Setting up API");
 
-    const app = nodecg.Router();
+  const app = nodecg.Router();
 
-    app.post('/api/v1/swap', (req, res) => {
-        swapPlayers();
-        res.sendStatus(200);
-    });
+  app.post("/api/v1/swap", (req, res) => {
+    swapPlayers();
+    res.sendStatus(200);
+  });
 
-    app.post('/api/v1/score', (req, res) => {
-        res.send(updateScore(req.body));
-    });
+  app.post("/api/v1/score", (req, res) => {
+    res.send(updateScore(req.body));
+  });
 
-    app.post('/api/v1/bracket', (req, res) => {
-        // set player in winners or losers bracket
-        res.send(updateBracket(req.body));
-    });
+  app.post("/api/v1/bracket", (req, res) => {
+    // set player in winners or losers bracket
+    res.send(updateBracket(req.body));
+  });
 
-    app.post('/api/v1/reset', (req, res) => {
-        resetScore();
-        res.sendStatus(200);
-    });
+  app.post("/api/v1/reset", (req, res) => {
+    resetScore();
+    res.sendStatus(200);
+  });
 
-    app.post('/api/v1/scoreboard', (req, res) => {
-        toggleScoreboard();
-        res.sendStatus(200);
-    })
+  app.post("/api/v1/scoreboard", (req, res) => {
+    toggleScoreboard();
+    res.sendStatus(200);
+  });
 
-    app.get('/api/v1/scoreboard', (req, res) => {
-        const val = nodecg.readReplicant<boolean>('hideScoreboard');
-        res.send(val != true ? "on" : "off");
-    })
+  app.get("/api/v1/scoreboard", (req, res) => {
+    const val = nodecg.readReplicant<boolean>("hideScoreboard");
+    res.send(val != true ? "on" : "off");
+  });
 
-    nodecg.mount(app);
+  nodecg.mount(app);
 }
 
 // TODO:
 // this could probably be in a helper method somewhere and re-used by the dashboard
 // instead of duplicate code functionality
 function swapPlayers() {
-    const matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
+  const matchInfo = nodecg.Replicant<MatchInfo>("matchInfo");
 
-    if (matchInfo.value && matchInfo.value.teams && matchInfo.value.teams.length == 2) {
-        const temp1 = copyTeamInfo(matchInfo.value.teams[0]);
-        const temp2 = copyTeamInfo(matchInfo.value.teams[1]);
+  if (
+    matchInfo.value &&
+    matchInfo.value.teams &&
+    matchInfo.value.teams.length == 2
+  ) {
+    const temp1 = copyTeamInfo(matchInfo.value.teams[0]);
+    const temp2 = copyTeamInfo(matchInfo.value.teams[1]);
 
-        matchInfo.value.teams[0] = temp2;
-        matchInfo.value.teams[1] = temp1;
-    }
-    else {
-        console.log("can't swap these teams");
-    }
+    matchInfo.value.teams[0] = temp2;
+    matchInfo.value.teams[1] = temp1;
+  } else {
+    console.log("can't swap these teams");
+  }
 }
 
 function copyTeamInfo(info: TeamInfo): TeamInfo {
-    const temp = new TeamInfo();
-    
-    info.players.forEach(p => {
-        temp.players.push(copyPlayerInfo(p));
-    })
+  const temp = new TeamInfo();
 
-    temp.bracket = info.bracket;
-    temp.score = info.score;
+  info.players.forEach((p) => {
+    temp.players.push(copyPlayerInfo(p));
+  });
 
-    return temp;
+  temp.bracket = info.bracket;
+  temp.score = info.score;
+
+  return temp;
 }
 
 function copyPlayerInfo(info: PlayerInfo): PlayerInfo {
-    const temp = new PlayerInfo();
-    temp.character = info.character;
-    temp.code = info.code;
-    temp.color = info.color;
-    temp.name = info.name;
-    temp.port = info.port;
-    return temp;
+  const temp = new PlayerInfo();
+  temp.character = info.character;
+  temp.code = info.code;
+  temp.color = info.color;
+  temp.name = info.name;
+  temp.port = info.port;
+  return temp;
 }
 
 function updateScore(dto: scoreDTO) {
-    const matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
+  const matchInfo = nodecg.Replicant<MatchInfo>("matchInfo");
 
-    if (!matchInfo.value || !matchInfo.value.teams || matchInfo.value.teams.length <= dto.team || !matchInfo.value.teams[dto.team]) {
-        return { error: "team does not exist" };
-    }
+  if (
+    !matchInfo.value ||
+    !matchInfo.value.teams ||
+    matchInfo.value.teams.length <= dto.team ||
+    !matchInfo.value.teams[dto.team]
+  ) {
+    return { error: "team does not exist" };
+  }
 
-    switch (dto.operation) {
-        case 'add':
-            matchInfo.value.teams[dto.team].score = matchInfo.value.teams[dto.team].score + 1;
-            break;
-        case 'subtract':
-            matchInfo.value.teams[dto.team].score = matchInfo.value.teams[dto.team].score - 1;
-            break;
-        case 'get':
-            return { score: matchInfo.value.teams[dto.team].score }
-        default:
-            console.log("failed to update score");
-            break;
-    }
+  switch (dto.operation) {
+    case "add":
+      matchInfo.value.teams[dto.team].score =
+        matchInfo.value.teams[dto.team].score + 1;
+      break;
+    case "subtract":
+      matchInfo.value.teams[dto.team].score =
+        matchInfo.value.teams[dto.team].score - 1;
+      break;
+    case "get":
+      return { score: matchInfo.value.teams[dto.team].score };
+    default:
+      console.log("failed to update score");
+      break;
+  }
 
-    return;
+  return;
 }
 
 function updateBracket(dto: bracketDTO) {
-    const matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
+  const matchInfo = nodecg.Replicant<MatchInfo>("matchInfo");
 
-    if (!matchInfo.value || !matchInfo.value.teams || matchInfo.value.teams.length <= dto.team || !matchInfo.value.teams[dto.team]) {
-        return { error: "team does not exist" };
-    }
+  if (
+    !matchInfo.value ||
+    !matchInfo.value.teams ||
+    matchInfo.value.teams.length <= dto.team ||
+    !matchInfo.value.teams[dto.team]
+  ) {
+    return { error: "team does not exist" };
+  }
 
-    switch (dto.bracket) {
-        case 'toggle':
-            if (matchInfo.value.teams[dto.team].bracket == '[L]') {
-                matchInfo.value.teams[dto.team].bracket = '[W]';
-            }
-            else {
-                matchInfo.value.teams[dto.team].bracket = '[L]';
-            }
-            break;
-        case 'get':
-            return { bracket: matchInfo.value.teams[dto.team].bracket }
-        default:
-            console.log("failed to update bracket");
-            break;
-    }
+  switch (dto.bracket) {
+    case "toggle":
+      if (matchInfo.value.teams[dto.team].bracket == "[L]") {
+        matchInfo.value.teams[dto.team].bracket = "[W]";
+      } else {
+        matchInfo.value.teams[dto.team].bracket = "[L]";
+      }
+      break;
+    case "get":
+      return { bracket: matchInfo.value.teams[dto.team].bracket };
+    default:
+      console.log("failed to update bracket");
+      break;
+  }
 
-    return;
+  return;
 }
 
 function resetScore() {
-    const matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
+  const matchInfo = nodecg.Replicant<MatchInfo>("matchInfo");
 
-    matchInfo.value.teams.forEach((t, i) => {
-        matchInfo.value.teams[i].score = 0;
-    })
+  matchInfo.value.teams.forEach((t, i) => {
+    matchInfo.value.teams[i].score = 0;
+  });
 }
 
 function toggleScoreboard() {
-    const sb = nodecg.Replicant<boolean>('hideScoreboard');
+  const sb = nodecg.Replicant<boolean>("hideScoreboard");
 
-    sb.value = !sb.value;
+  sb.value = !sb.value;
 }

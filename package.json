@@ -97,11 +97,14 @@
     "concurrently": "^7.6.0",
     "crypto-browserify": "^3.12.0",
     "eslint": "^8.33.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "nodecg-types": "^1.9.0",
     "nodemon": "^2.0.20",
     "os-browserify": "^0.3.0",
     "parcel": "^2.8.3",
     "path-browserify": "^1.0.1",
+    "prettier": "2.8.4",
     "process": "^0.11.10",
     "rimraf": "^4.1.2",
     "semantic-release": "^20.1.0",
@@ -124,7 +127,6 @@
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
     "clean": "rimraf extension/ graphics/ dashboard/",
-    "semantic-release": "semantic-release",
     "dev": "concurrently \"npm:watch:*\" \"npm:dev:server\"",
     "dev:no-server": "concurrently \"npm:watch:*\"",
     "dev:server": "nodemon --watch extension ../../index.js",
@@ -134,7 +136,8 @@
     "build": "npm run clean && npm run check && npm run lint && concurrently \"npm:build:*\"",
     "build:extension": "parcel build src/extension/*.ts --target extension",
     "build:dashboard": "parcel build \"src/dashboard/**/*.html\" --public-url /bundles/nodecg-melee-scoreboard/dashboard --target dashboard",
-    "build:graphics": "parcel build \"src/graphics/**/*.html\" src/graphics/**/*.tsx --public-url /bundles/nodecg-melee-scoreboard/graphics --target graphics"
+    "build:graphics": "parcel build \"src/graphics/**/*.html\" src/graphics/**/*.tsx --public-url /bundles/nodecg-melee-scoreboard/graphics --target graphics",
+    "semantic-release": "semantic-release"
   },
   "repository": {
     "type": "git",
