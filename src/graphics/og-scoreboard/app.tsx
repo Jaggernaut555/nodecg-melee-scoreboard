@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from "react";
 import { useReplicant } from "use-nodecg";
 import "./og-scoreboard.css";
 import PlayerName from "./PlayerPlates/playerName";
