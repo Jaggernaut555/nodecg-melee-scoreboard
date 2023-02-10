@@ -1,5 +1,5 @@
 {
-  "name": "melee-scoreboard",
+  "name": "nodecg-melee-scoreboard",
   "version": "0.0.0",
   "description": "A scoreboard for slippi spectating",
   "homepage": "",
@@ -116,11 +116,11 @@
     "check": "tsc --noEmit",
     "watch": "npm-run-all --parallel watch:**",
     "watch:extension": "parcel watch src/extension/*.ts --no-hmr --target extension",
-    "watch:dashboard": "npx parcel watch \"src/dashboard/**/*.html\" --public-url /bundles/melee-scoreboard/dashboard --no-hmr --target dashboard",
-    "watch:graphics": "parcel watch \"src/graphics/**/*.html\" src/graphics/**/*.tsx --public-url /bundles/melee-scoreboard/graphics --no-hmr --target graphics",
+    "watch:dashboard": "npx parcel watch \"src/dashboard/**/*.html\" --public-url /bundles/nodecg-melee-scoreboard/dashboard --no-hmr --target dashboard",
+    "watch:graphics": "parcel watch \"src/graphics/**/*.html\" src/graphics/**/*.tsx --public-url /bundles/nodecg-melee-scoreboard/graphics --no-hmr --target graphics",
     "build": "npm-run-all --parallel build:**",
-    "build:extension": "parcel build src/extension/*.ts --target node",
-    "build:dashboard": "parcel build \"src/dashboard/**/*.html\" --public-url /bundles/new-melee-scoreboard/dashboard --target dashboard",
-    "build:graphics": "parcel build \"src/graphics/**/*.html\" src/graphics/**/*.tsx --public-url /bundles/melee-scoreboard/graphics --target graphics"
+    "build:extension": "parcel build src/extension/*.ts --target extension",
+    "build:dashboard": "parcel build \"src/dashboard/**/*.html\" --public-url /bundles/nodecg-melee-scoreboard/dashboard --target dashboard",
+    "build:graphics": "parcel build \"src/graphics/**/*.html\" src/graphics/**/*.tsx --public-url /bundles/nodecg-melee-scoreboard/graphics --target graphics"
   }
 }

@@ -59,7 +59,7 @@ export function initAPI(init_nodecg: NodeCG) {
 function swapPlayers() {
     let matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
 
-    if (matchInfo.value.teams.length == 2) {
+    if (matchInfo.value && matchInfo.value.teams && matchInfo.value.teams.length == 2) {
         let temp1 = copyTeamInfo(matchInfo.value.teams[0]);
         let temp2 = copyTeamInfo(matchInfo.value.teams[1]);
 
@@ -97,7 +97,7 @@ function copyPlayerInfo(info: PlayerInfo): PlayerInfo {
 function updateScore(dto: scoreDTO) {
     let matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
 
-    if (!matchInfo.value.teams[dto.team]) {
+    if (!matchInfo.value || !matchInfo.value.teams || matchInfo.value.teams.length <= dto.team || !matchInfo.value.teams[dto.team]) {
         return { error: "team does not exist" };
     }
 
@@ -121,7 +121,7 @@ function updateScore(dto: scoreDTO) {
 function updateBracket(dto: bracketDTO) {
     let matchInfo = nodecg.Replicant<MatchInfo>('matchInfo');
 
-    if (!matchInfo.value.teams[dto.team]) {
+    if (!matchInfo.value || !matchInfo.value.teams || matchInfo.value.teams.length <= dto.team || !matchInfo.value.teams[dto.team]) {
         return { error: "team does not exist" };
     }
 

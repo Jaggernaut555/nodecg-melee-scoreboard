@@ -21,7 +21,7 @@ export async function initReplay(nodecg_init: NodeCG) {
     
     nodecg.log.info("initing replay watcher");
 
-    if (!path.isAbsolute(slippiFolder)) {
+    if (!slippiFolder || !path.isAbsolute(slippiFolder)) {
         nodecg.log.error("Configured Slippi folder is not an absolute path");
         connectionStatus.value = 'disconnected';
         return;
