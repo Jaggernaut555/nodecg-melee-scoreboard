@@ -9,5 +9,4 @@ bower_components
 /dist
 .parcel-cache
 .cache
-.vscode
 *.zip
