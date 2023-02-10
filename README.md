@@ -10,6 +10,9 @@ Replacing the `portable-nodecg-melee-scoreboard-[version]` folder WILL get rid o
 
 If you already have a running version of the scoreboard then just download the `nodecg-melee-scoreboard.zip` file from the releases and replace the folder inside `portable-nodecg-melee-scoreboard-[version]/bundles` and it will keep all your previous settings.
 
+# Streamdeck
+
+I added some simple API routes to quickly modify scores, winners/losers bracket, and show/hide the scoreboard from devices like the elgato streamdeck. These can be used via the `API Ninja` streamdeck plugin from BarRaider. More information on [The streamdeck doc file](Docs/Streamdeck.md).
 
 # Installing from source
 nodecg-melee-scoreboard is a [NodeCG](http://github.com/nodecg/nodecg) bundle.
