@@ -39,4 +39,8 @@ npm install --omit=dev --legacy-peer-deps
 
 ## Zip file for release
 Set-Location ..\..\..
+# Entire package
 7z a portable-$bundleName-$version.zip ./dist/*
+
+# Only bundle
+7z a $bundleName.zip ./dist/bundles/$bundleName/*
