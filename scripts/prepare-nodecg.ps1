@@ -43,4 +43,4 @@ Set-Location ..\..\..
 7z a portable-$bundleName-$version.zip ./dist/*
 
 # Only bundle
-7z a $bundleName.zip ./dist/bundles/$bundleName/*
+7z a "$bundleName.zip" ./dist/bundles/$bundleName/*
