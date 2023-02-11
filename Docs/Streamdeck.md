@@ -98,3 +98,38 @@ Swap player positions on the right/left side of the scoreboard
 - Response shown: `*`
 - Autorun every: 5 seconds
 - Hide green success indicator: `true`
+
+# Twitch Predictions
+This requires the twitch panel to be set up and showing `Valid Token: Yes`.
+
+### Prediction
+- Title: Anything you want
+- Request Type: Post
+- API URL: http://localhost:9090/api/v1/prediction
+- Data:
+```
+{
+    "operation": "progress"
+}
+```
+  - valid operations are
+    - `progress` - If no active prediction this will create one. If an active but not locked prediction this will lock it. If an active and locked prediction this will resolve it
+    - `create` - Create a new prediction. The subtitle will be the title of the prediction
+    - `lock` - End bet submissions
+    - `resolve` - resolve the prediction and selects the team with the higher game count. If tied the prediction is not ended
+    - `cancel` - cancels the current prediction
+
+### Show Prediction Status
+- Title: *LEAVE EMPTY*
+- Request Type: Post
+- API URL: http://localhost:9090/api/v1/prediction
+- Content Type: application/json
+- Response shown: `status`
+- Autorun every: 5 seconds
+- Hide green success indicator: `true`
+- Data:
+```
+{
+    "operation": "get"
+}
+```

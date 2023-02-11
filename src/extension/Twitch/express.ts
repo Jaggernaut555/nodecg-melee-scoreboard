@@ -122,7 +122,6 @@ export function initTwitchExpress(): boolean {
   const token = context.nodecg.readReplicant<AccessToken>("twitchAccessToken");
   if (token) {
     initApi();
-    console.log("ye");
   }
 
   return true;

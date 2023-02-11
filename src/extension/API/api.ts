@@ -1,8 +1,6 @@
-import { NodeCG } from "nodecg-types/types/server";
-import { MatchInfo } from "../../types/index.d";
+import { MatchInfo, TwitchPredictionStatus } from "../../types/index.d";
 import { copyTeamInfo } from "../../util";
-
-let nodecg: NodeCG;
+import context from "../context";
 
 interface scoreDTO {
   team: number;
@@ -14,13 +12,16 @@ interface bracketDTO {
   bracket: "toggle" | "get";
 }
 
+interface predictionDTO {
+  operation: "progress" | "create" | "lock" | "cancel" | "resolve" | "get";
+}
+
 // This is mostly for controlling quick actions with the stream deck
 // But other things could use this api too
-export function initAPI(init_nodecg: NodeCG) {
-  nodecg = init_nodecg;
-  nodecg.log.info("Setting up API");
+export function initAPI() {
+  context.nodecg.log.info("Setting up API");
 
-  const app = nodecg.Router();
+  const app = context.nodecg.Router();
 
   app.post("/api/v1/swap", (req, res) => {
     swapPlayers();
@@ -47,18 +48,22 @@ export function initAPI(init_nodecg: NodeCG) {
   });
 
   app.get("/api/v1/scoreboard", (req, res) => {
-    const val = nodecg.readReplicant<boolean>("hideScoreboard");
+    const val = context.nodecg.readReplicant<boolean>("hideScoreboard");
     res.send(val != true ? "on" : "off");
   });
 
-  nodecg.mount(app);
+  app.post("/api/v1/prediction", (req, res) => {
+    res.send(updatePrediction(req.body));
+  });
+
+  context.nodecg.mount(app);
 }
 
 // TODO:
 // this could probably be in a helper method somewhere and re-used by the dashboard
 // instead of duplicate code functionality
 function swapPlayers() {
-  const matchInfo = nodecg.Replicant<MatchInfo>("matchInfo");
+  const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
 
   if (
     matchInfo.value &&
@@ -76,7 +81,7 @@ function swapPlayers() {
 }
 
 function updateScore(dto: scoreDTO) {
-  const matchInfo = nodecg.Replicant<MatchInfo>("matchInfo");
+  const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
 
   if (
     !matchInfo.value ||
@@ -107,7 +112,7 @@ function updateScore(dto: scoreDTO) {
 }
 
 function updateBracket(dto: bracketDTO) {
-  const matchInfo = nodecg.Replicant<MatchInfo>("matchInfo");
+  const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
 
   if (
     !matchInfo.value ||
@@ -137,7 +142,7 @@ function updateBracket(dto: bracketDTO) {
 }
 
 function resetScore() {
-  const matchInfo = nodecg.Replicant<MatchInfo>("matchInfo");
+  const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
 
   matchInfo.value.teams.forEach((t, i) => {
     matchInfo.value.teams[i].score = 0;
@@ -148,4 +153,35 @@ function toggleScoreboard() {
   const sb = nodecg.Replicant<boolean>("hideScoreboard");
 
   sb.value = !sb.value;
+}
+
+function updatePrediction(dto: predictionDTO) {
+  const predictionStatus = context.nodecg.readReplicant<TwitchPredictionStatus>(
+    "twitchCurrentPredictionStatus"
+  );
+  let messageName: string;
+  switch (dto.operation) {
+    case "create":
+      messageName = "twitchCreatePrediction";
+      break;
+    case "lock":
+      messageName = "twitchLockPrediction";
+      break;
+    case "cancel":
+      messageName = "twitchCancelPrediction";
+      break;
+    case "resolve":
+      messageName = "twitchResolvePrediction";
+      break;
+    case "progress":
+      messageName = "twitchProgressPrediction";
+      break;
+    case "get":
+      return { status: predictionStatus };
+    default:
+      context.nodecg.log.error("Invalid option to update prediction");
+      return;
+  }
+
+  context.nodecg.sendMessage(messageName);
 }

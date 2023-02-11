@@ -6,8 +6,9 @@ import { initTwitchExpress } from "./express";
 import {
   cancelPrediction,
   createPrediction,
-  endPrediction,
+  resolvePrediction,
   lockPrediction,
+  progressPrediction,
 } from "./predictions";
 import twitchContext from "./twitchContext";
 
@@ -60,7 +61,7 @@ function initReplicants() {
 }
 
 function initMessages() {
-  context.nodecg.listenFor("twitchStartPrediction", () => {
+  context.nodecg.listenFor("twitchCreatePrediction", () => {
     createPrediction();
   });
 
@@ -72,8 +73,12 @@ function initMessages() {
     cancelPrediction();
   });
 
-  context.nodecg.listenFor("twitchEndPrediction", () => {
-    endPrediction();
+  context.nodecg.listenFor("twitchResolvePrediction", () => {
+    resolvePrediction();
+  });
+
+  context.nodecg.listenFor("twitchProgressPrediction", () => {
+    progressPrediction();
   });
 
   context.nodecg.listenFor("twitchCheckToken", (val, ack) => {

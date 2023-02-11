@@ -26,7 +26,7 @@ module.exports = function (nodecg: NodeCG) {
   context.nodecg.log.info("Good luck!");
 
   initReplicants();
-  initAPI(context.nodecg);
+  initAPI();
   initSlippi(context.nodecg);
   initTwitch();
 };

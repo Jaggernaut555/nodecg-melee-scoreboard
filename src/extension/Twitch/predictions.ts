@@ -71,7 +71,7 @@ export function lockPrediction() {
     });
 }
 
-export function endPrediction() {
+export function resolvePrediction() {
   const twitchUser = context.nodecg.readReplicant<string>("twitchUserId");
   const predictionId = context.nodecg.readReplicant<string>(
     "twitchCurrentPredictionId"
@@ -130,4 +130,25 @@ export function cancelPrediction() {
     .catch((err) => {
       context.nodecg.log.error(err);
     });
+}
+
+export function progressPrediction() {
+  const predictionStatus = context.nodecg.readReplicant<TwitchPredictionStatus>(
+    "twitchCurrentPredictionStatus"
+  );
+
+  switch (predictionStatus) {
+    case "Stopped":
+      createPrediction();
+      break;
+    case "Started":
+      lockPrediction();
+      break;
+    case "Locked":
+      resolvePrediction();
+      break;
+    default:
+      context.nodecg.log.error("Invalid state to progress prediction");
+      return;
+  }
 }

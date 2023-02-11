@@ -54,7 +54,7 @@ function App() {
   };
 
   const startPrediction = () => {
-    nodecg.sendMessage("twitchStartPrediction");
+    nodecg.sendMessage("twitchCreatePrediction");
   };
 
   const lockPrediction = () => {
@@ -65,16 +65,9 @@ function App() {
     nodecg.sendMessage("twitchCancelPrediction");
   };
 
-  const endPrediction = () => {
-    nodecg.sendMessage("twitchEndPrediction");
+  const resolvePrediction = () => {
+    nodecg.sendMessage("twitchResolvePrediction");
   };
-
-  // TODO:
-  // display callback url
-
-  useEffect(() => {
-    console.log(validLogin);
-  }, [validLogin]);
 
   return (
     <div>
@@ -140,7 +133,7 @@ function App() {
           </button>
           <button
             disabled={!validLogin || predictionStatus == "Stopped"}
-            onClick={endPrediction}
+            onClick={resolvePrediction}
           >
             End Prediction
           </button>
