@@ -4,7 +4,7 @@ import { deactivateReplay, initReplay } from "./replay";
 
 export function initSlippi() {
   context.nodecg.sendMessage("slippiConnectionStatus", "disconnected");
-  const method = nodecg.Replicant<SlippiMethod>("slippiMethod", {
+  const method = context.nodecg.Replicant<SlippiMethod>("slippiMethod", {
     defaultValue: "fileWatcher",
   });
 
@@ -29,13 +29,13 @@ export function initSlippi() {
     }
   });
 
-  nodecg.listenFor("slippiTryConnect", () => {
-    nodecg.log.info("trying to connect");
+  context.nodecg.listenFor("slippiTryConnect", () => {
+    context.nodecg.log.info("trying to connect");
     initFunc();
   });
 
-  nodecg.listenFor("slippiTryDisconnect", () => {
-    nodecg.log.info("trying to disconnect");
+  context.nodecg.listenFor("slippiTryDisconnect", () => {
+    context.nodecg.log.info("trying to disconnect");
     stopFunc();
   });
 
