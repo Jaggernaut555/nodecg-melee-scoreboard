@@ -18,7 +18,6 @@ function PanelTeamInfo(props: PanelTeamInfoProps) {
   const addPlayer = () => {
     const pi = new PlayerInfo();
     const teamInfo = props.info;
-    // console.log(teamInfo);
     teamInfo.players.push(pi);
     props.updateInfo(teamInfo, props.index);
   };
@@ -50,13 +49,11 @@ function PanelTeamInfo(props: PanelTeamInfoProps) {
   // }
 
   useEffect(() => {
-    console.log("updating display");
     if (teamBracket != props.info.bracket) setTeamBracket(props.info.bracket);
     if (teamScore != props.info.score) setTeamScore(props.info.score);
   }, [props.info.score, props.info.bracket]);
 
   useEffect(() => {
-    console.log("updating replicant");
     if (teamBracket != props.info.bracket) updateBracket();
     if (teamScore != props.info.score) updateScore();
   }, [teamBracket, teamScore]);

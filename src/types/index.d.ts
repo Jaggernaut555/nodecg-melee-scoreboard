@@ -10,6 +10,7 @@ export class TeamInfo {
   players: PlayerInfo[] = [];
   score = 0;
   bracket: Bracket = "[W]";
+  outcomeId = "";
 }
 
 // replicants must be an object, not an array
@@ -22,3 +23,5 @@ export type Bracket = "[W]" | "[L]";
 export type SlippiMethod = "realtime" | "fileWatcher";
 
 export type ConnectionStatus = "connected" | "disconnected";
+
+export type TwitchPredictionStatus = "Started" | "Locked" | "Stopped";

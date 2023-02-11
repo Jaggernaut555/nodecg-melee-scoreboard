@@ -206,8 +206,10 @@ async function setNames(gameSettings: GameStartType) {
         if (!oldTeam) {
           return;
         }
+        // TODO: Extract this to utils
         team.score = oldTeam.score;
         team.bracket = oldTeam.bracket;
+        team.outcomeId = oldTeam.outcomeId;
       });
     } else {
       nodecg.log.debug("new players");

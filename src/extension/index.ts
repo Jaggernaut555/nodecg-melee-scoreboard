@@ -3,28 +3,36 @@ import { initSlippi } from "./Slippi/slippi";
 import { initAPI } from "./API/api";
 import { MatchInfo } from "../types/index.d";
 import { version, name } from "../../package.json";
+import { initTwitch } from "./Twitch";
+
+import context from "./context";
 
 module.exports = function (nodecg: NodeCG) {
-  nodecg.log.info(`${name} version ${version}`);
-  nodecg.log.info(
+  context.nodecg = nodecg;
+
+  context.nodecg.log.info(`${name} version ${version}`);
+  context.nodecg.log.info(
     "The Dashboard can be found at the URL given at the end of start up"
   );
-  nodecg.log.info(
+  context.nodecg.log.info(
     "Get the scoreboard URL from the graphics tab and add it to your OBS Scene"
   );
-  nodecg.log.info("The dashboard can be added as an OBS custom browser dock");
-  nodecg.log.info(
+  context.nodecg.log.info(
+    "The dashboard can be added as an OBS custom browser dock"
+  );
+  context.nodecg.log.info(
     "This must be running before OBS is launched. Otherwise the scoreboard source will need to be refreshed in OBS."
   );
-  nodecg.log.info("Good luck!");
+  context.nodecg.log.info("Good luck!");
 
-  initReplicants(nodecg);
-  initAPI(nodecg);
-  initSlippi(nodecg);
+  initReplicants();
+  initAPI(context.nodecg);
+  initSlippi(context.nodecg);
+  initTwitch();
 };
 
-function initReplicants(nodecg: NodeCG) {
+function initReplicants() {
   // Some things I want to just make sure exist for use everywhere on the scoreboard
-  nodecg.Replicant("matchInfo", { defaultValue: new MatchInfo() });
-  nodecg.Replicant<boolean>("hideScoreboard", { defaultValue: true });
+  context.nodecg.Replicant("matchInfo", { defaultValue: new MatchInfo() });
+  context.nodecg.Replicant<boolean>("hideScoreboard", { defaultValue: true });
 }

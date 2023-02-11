@@ -53,7 +53,7 @@
         "file": "PlayerInfoPanel.html",
         "fullbleed": false,
         "headerColor": "#525F78",
-        "width": 4
+        "width": 3
       },
       {
         "name": "Tournament Info",
@@ -66,6 +66,14 @@
         "name": "Slippi Connection",
         "title": "Slippi Connection",
         "file": "SlippiConnectionPanel.html",
+        "fullbleed": false,
+        "headerColor": "#525F78",
+        "width": 3
+      },
+      {
+        "name": "Twitch",
+        "title": "Twitch",
+        "file": "TwitchPanel.html",
         "fullbleed": false,
         "headerColor": "#525F78",
         "width": 3
@@ -87,7 +95,10 @@
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@types/animejs": "^3.1.7",
+    "@types/express-session": "^1.17.5",
     "@types/lodash": "^4.14.191",
+    "@types/passport": "^1.0.11",
+    "@types/passport-twitch-latest": "^1.0.1",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
     "@typescript-eslint/eslint-plugin": "^5.51.0",
@@ -113,11 +124,16 @@
     "util": "^0.12.5"
   },
   "dependencies": {
+    "@hewmen/passport-twitch": "^1.0.4",
     "@slippi/slippi-js": "^6.6.0",
+    "@twurple/api": "^5.3.4",
+    "@twurple/auth": "^5.3.4",
     "@vinceau/slp-realtime": "^3.3.0",
     "animejs": "^3.2.1",
     "chokidar": "^3.5.3",
+    "express-session": "^1.17.3",
     "lodash": "^4.17.21",
+    "passport": "^0.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "use-nodecg": "^0.4.0"
@@ -127,9 +143,9 @@
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
     "clean": "rimraf extension/ graphics/ dashboard/ dist/",
-    "dev": "concurrently \"npm:watch:*\" \"npm:dev:server\"",
+    "dev": "concurrently \"npm:watch:*\" \"npm:dev:server-only\"",
     "dev:no-server": "concurrently \"npm:watch:*\"",
-    "dev:server-only": "nodemon --watch extension ../../index.js",
+    "dev:server-only": "nodemon -r source-map-support/register --watch extension ../../index.js",
     "watch:extension": "parcel watch src/extension/*.ts --no-hmr --target extension",
     "watch:dashboard": "npx parcel watch \"src/dashboard/**/*.html\" --public-url /bundles/nodecg-melee-scoreboard/dashboard --no-hmr --target dashboard",
     "watch:graphics": "parcel watch \"src/graphics/**/*.html\" src/graphics/**/*.tsx --public-url /bundles/nodecg-melee-scoreboard/graphics --no-hmr --target graphics",

@@ -1,5 +1,6 @@
 import { NodeCG } from "nodecg-types/types/server";
-import { MatchInfo, PlayerInfo, TeamInfo } from "../../types/index.d";
+import { MatchInfo } from "../../types/index.d";
+import { copyTeamInfo } from "../../util";
 
 let nodecg: NodeCG;
 
@@ -72,29 +73,6 @@ function swapPlayers() {
   } else {
     console.log("can't swap these teams");
   }
-}
-
-function copyTeamInfo(info: TeamInfo): TeamInfo {
-  const temp = new TeamInfo();
-
-  info.players.forEach((p) => {
-    temp.players.push(copyPlayerInfo(p));
-  });
-
-  temp.bracket = info.bracket;
-  temp.score = info.score;
-
-  return temp;
-}
-
-function copyPlayerInfo(info: PlayerInfo): PlayerInfo {
-  const temp = new PlayerInfo();
-  temp.character = info.character;
-  temp.code = info.code;
-  temp.color = info.color;
-  temp.name = info.name;
-  temp.port = info.port;
-  return temp;
 }
 
 function updateScore(dto: scoreDTO) {
