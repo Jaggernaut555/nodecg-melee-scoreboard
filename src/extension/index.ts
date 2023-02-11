@@ -27,7 +27,7 @@ module.exports = function (nodecg: NodeCG) {
 
   initReplicants();
   initAPI();
-  initSlippi(context.nodecg);
+  initSlippi();
   initTwitch();
 };
 

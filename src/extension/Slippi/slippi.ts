@@ -1,14 +1,14 @@
-import type { NodeCG } from "nodecg-types/types/server";
 import { SlippiMethod } from "../../types";
+import context from "../context";
 import { deactivateReplay, initReplay } from "./replay";
 
-export function initSlippi(nodecg: NodeCG) {
-  nodecg.sendMessage("slippiConnectionStatus", "disconnected");
+export function initSlippi() {
+  context.nodecg.sendMessage("slippiConnectionStatus", "disconnected");
   const method = nodecg.Replicant<SlippiMethod>("slippiMethod", {
     defaultValue: "fileWatcher",
   });
 
-  let initFunc: (nodecg: NodeCG) => void = initReplay;
+  let initFunc: () => void = initReplay;
   let stopFunc: () => void = deactivateReplay;
 
   method.on("change", (newValue) => {
@@ -23,7 +23,7 @@ export function initSlippi(nodecg: NodeCG) {
         break;
       }
       default: {
-        nodecg.log.info("No valid slippi connection method set");
+        context.nodecg.log.info("No valid slippi connection method set");
         break;
       }
     }
@@ -31,7 +31,7 @@ export function initSlippi(nodecg: NodeCG) {
 
   nodecg.listenFor("slippiTryConnect", () => {
     nodecg.log.info("trying to connect");
-    initFunc(nodecg);
+    initFunc();
   });
 
   nodecg.listenFor("slippiTryDisconnect", () => {
@@ -41,5 +41,5 @@ export function initSlippi(nodecg: NodeCG) {
 
   // TODO:
   // Have it automatically try to run the previous one on launch
-  initFunc(nodecg);
+  initFunc();
 }

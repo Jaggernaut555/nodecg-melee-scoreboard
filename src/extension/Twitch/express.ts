@@ -3,7 +3,6 @@ import { Strategy as TwitchStrategy, Scope } from "@hewmen/passport-twitch";
 import session from "express-session";
 import { ApiClient } from "@twurple/api";
 import { RefreshingAuthProvider, AccessToken } from "@twurple/auth";
-import { TwitchPredictionStatus } from "../../types/index.d";
 
 import context from "../context";
 import twitchContext from "./twitchContext";

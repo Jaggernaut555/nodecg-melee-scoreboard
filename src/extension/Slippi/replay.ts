@@ -5,7 +5,6 @@ import {
   PlayerType,
 } from "@slippi/slippi-js";
 import _ from "lodash";
-import { NodeCG } from "nodecg-types/types/server";
 import chokidar from "chokidar";
 import {
   ConnectionStatus,
@@ -14,8 +13,7 @@ import {
   TeamInfo,
 } from "../../types/index.d";
 import * as path from "path";
-
-let nodecg: NodeCG;
+import context from "../context";
 
 let currentGame: SlippiGame;
 let currentGameWatcher: chokidar.FSWatcher;
@@ -24,22 +22,24 @@ let replayWatcher: chokidar.FSWatcher | null;
 // TODO: can make this an interact-able setting
 const testingMode = false;
 
-export async function initReplay(nodecg_init: NodeCG) {
-  nodecg = nodecg_init;
-  const slippiFolder = nodecg.Replicant<string>("slippiReplayFolder").value;
-  const connectionStatus = nodecg.Replicant<ConnectionStatus>(
+export async function initReplay() {
+  const slippiFolder =
+    context.nodecg.Replicant<string>("slippiReplayFolder").value;
+  const connectionStatus = context.nodecg.Replicant<ConnectionStatus>(
     "slippiConnectionStatus"
   );
 
-  nodecg.log.info("Setting up replay watcher");
+  context.nodecg.log.info("Setting up replay watcher");
 
   if (!slippiFolder || !path.isAbsolute(slippiFolder)) {
-    nodecg.log.error("Configured Slippi folder is not an absolute path");
+    context.nodecg.log.error(
+      "Configured Slippi folder is not an absolute path"
+    );
     connectionStatus.value = "disconnected";
     return;
   }
 
-  nodecg.log.debug(slippiFolder);
+  context.nodecg.log.debug(slippiFolder);
   connectionStatus.value = "connected";
 
   replayWatcher = chokidar
@@ -59,31 +59,31 @@ export async function deactivateReplay() {
     replayWatcher.close();
   }
   replayWatcher = null;
-  const connectionStatus = nodecg.Replicant<ConnectionStatus>(
+  const connectionStatus = context.nodecg.Replicant<ConnectionStatus>(
     "slippiConnectionStatus"
   );
   connectionStatus.value = "disconnected";
 }
 
 function watchForNewReplays(path: string) {
-  nodecg.log.debug("New game found");
+  context.nodecg.log.debug("New game found");
   const game = new SlippiGame(path, { processOnTheFly: true });
 
   // Don't track games that are already over
   const end = game.getGameEnd();
   if (end && !testingMode) {
-    nodecg.log.debug("Skipping completed game");
+    context.nodecg.log.debug("Skipping completed game");
     return;
   }
 
   currentGame = game;
   const gamePath = currentGame.getFilePath();
-  nodecg.log.debug(gamePath);
+  context.nodecg.log.debug(gamePath);
 
   try {
     trackNewGame();
   } catch (err) {
-    nodecg.log.error(err);
+    context.nodecg.log.error(err);
     return;
   }
 
@@ -106,7 +106,7 @@ function trackNewGame() {
   const settings = currentGame.getSettings();
 
   if (settings === null) {
-    nodecg.log.error("No game found");
+    context.nodecg.log.error("No game found");
   } else {
     setNames(settings);
   }
@@ -196,7 +196,7 @@ async function setNames(gameSettings: GameStartType) {
     });
 
     if (allPlayersExist) {
-      nodecg.log.debug("re-using old teams");
+      context.nodecg.log.debug("re-using old teams");
 
       teams.forEach((team) => {
         // we just checked so these must exist
@@ -212,7 +212,7 @@ async function setNames(gameSettings: GameStartType) {
         team.outcomeId = oldTeam.outcomeId;
       });
     } else {
-      nodecg.log.debug("new players");
+      context.nodecg.log.debug("new players");
     }
 
     matchInfo.teams = teams;
@@ -233,12 +233,12 @@ function GameListener() {
   try {
     const end = currentGame.getGameEnd();
     if (end && !testingMode) {
-      nodecg.log.debug("Game ended");
+      context.nodecg.log.debug("Game ended");
 
       const winnerIndex = determineWinner(currentGame);
 
       if (winnerIndex == -1) {
-        nodecg.log.debug("no winner found");
+        context.nodecg.log.debug("no winner found");
         return;
       }
 
@@ -248,7 +248,7 @@ function GameListener() {
       currentGameWatcher.off("change", GameListener);
     }
   } catch (error) {
-    nodecg.log.error(error);
+    context.nodecg.log.error(error);
   }
 }
 
@@ -259,7 +259,7 @@ export function determineWinner(game: SlippiGame): number {
     const end = game.getGameEnd();
 
     if (!gameSettings || !end) {
-      nodecg.log.debug(game, gameSettings, end);
+      context.nodecg.log.debug(game, gameSettings, end);
       throw new Error("Current game does not exist");
     }
 
@@ -308,8 +308,8 @@ export function determineWinner(game: SlippiGame): number {
         return -1;
     }
   } catch (err) {
-    nodecg.log.error("Error determining winner");
-    nodecg.log.error(err);
+    context.nodecg.log.error("Error determining winner");
+    context.nodecg.log.error(err);
   }
   return -1;
 }
@@ -367,10 +367,10 @@ export function determineWinner(game: SlippiGame): number {
 // team will have players and score
 
 function updateMatchInfo(matchInfo: MatchInfo): void {
-  const mi = nodecg.Replicant<MatchInfo>("matchInfo");
+  const mi = context.nodecg.Replicant<MatchInfo>("matchInfo");
   mi.value = matchInfo;
 }
 
 function getMatchInfo() {
-  return nodecg.readReplicant<MatchInfo>("matchInfo");
+  return context.nodecg.readReplicant<MatchInfo>("matchInfo");
 }

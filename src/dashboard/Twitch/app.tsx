@@ -43,7 +43,7 @@ function App() {
     // Send a message to try to set up
     nodecg
       .sendMessage("twitchCheckToken")
-      .then((val) => {
+      .then(() => {
         // send to login page
         window.open("/auth/twitch", "_top");
       })

@@ -101,6 +101,7 @@ export function resolvePrediction() {
         "twitchCurrentPredictionStatus"
       );
       predictionStatus.value = "Stopped";
+      context.nodecg.log.debug(`resolved ${pred.id}`);
     })
     .catch((err) => {
       context.nodecg.log.error(err);
