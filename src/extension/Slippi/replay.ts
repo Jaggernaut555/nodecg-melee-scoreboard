@@ -184,47 +184,55 @@ async function setNames(gameSettings: GameStartType) {
       }
     }
 
+    // TODO:
+    // if code is empty/null use port
+
     const matchInfo = getMatchInfo();
 
     // here will always be one team per new player
-    const allPlayersExist = matchInfo.teams.every((ot) => {
-      const onePlayerTeam = ot.players.length == 1;
-      const hasPlayer = teams.some(
-        (nt) => nt.players[0].code == ot.players[0].code
-      );
-      return onePlayerTeam && hasPlayer;
-    });
+    const allPlayersExist =
+      matchInfo.teams &&
+      matchInfo.teams.length == 2 &&
+      matchInfo.teams.every((t) => t.players.length == 1) &&
+      matchInfo.teams.every((ot) => {
+        const onePlayerTeam = ot.players.length == 1;
+        const hasPlayer = teams.some((nt) => {
+          if (!nt.players[0].code && !ot.players[0].code) {
+            return nt.players[0].port == ot.players[0].port;
+          }
+
+          return nt.players[0].code == ot.players[0].code;
+        });
+        return onePlayerTeam && hasPlayer;
+      });
 
     if (allPlayersExist) {
       context.nodecg.log.debug("re-using old teams");
 
-      teams.forEach((team) => {
-        // we just checked so these must exist
-        const oldTeam = matchInfo.teams.find(
-          (t) => t.players[0].code == team.players[0].code
-        );
-        if (!oldTeam) {
+      // We want to keep the order of the existing teams
+      // But update all the player info from the new match
+      matchInfo.teams.forEach((team) => {
+        const newTeam = teams.find((t) => {
+          if (!t.players[0].code && !team.players[0].code) {
+            return t.players[0].port == team.players[0].port;
+          }
+          return t.players[0].code == team.players[0].code;
+        });
+        if (!newTeam) {
           return;
         }
-        // TODO: Extract this to utils
-        team.score = oldTeam.score;
-        team.bracket = oldTeam.bracket;
-        team.outcomeId = oldTeam.outcomeId;
+        team.players = newTeam.players;
       });
     } else {
       context.nodecg.log.debug("new players");
+      matchInfo.teams = teams;
     }
 
-    matchInfo.teams = teams;
     updateMatchInfo(matchInfo);
   }
 
   if (testingMode) {
-    const winnerIndex = determineWinner(currentGame);
-
-    const matchInfo = getMatchInfo();
-    matchInfo.teams[winnerIndex].score += 1;
-    updateMatchInfo(matchInfo);
+    updateWinner();
   }
 }
 
@@ -235,16 +243,8 @@ function GameListener() {
     if (end && !testingMode) {
       context.nodecg.log.debug("Game ended");
 
-      const winnerIndex = determineWinner(currentGame);
+      updateWinner();
 
-      if (winnerIndex == -1) {
-        context.nodecg.log.debug("no winner found");
-        return;
-      }
-
-      const matchInfo = getMatchInfo();
-      matchInfo.teams[winnerIndex].score += 1;
-      updateMatchInfo(matchInfo);
       currentGameWatcher.off("change", GameListener);
     }
   } catch (error) {
@@ -252,8 +252,29 @@ function GameListener() {
   }
 }
 
-/// Return index of winner (0/1) or unknown (-1)
-export function determineWinner(game: SlippiGame): number {
+function updateWinner() {
+  const end = currentGame.getGameEnd();
+
+  const winnerPort = findWinningPort(currentGame);
+
+  if (winnerPort == -1) {
+    context.nodecg.log.debug("no winner found");
+    return;
+  }
+
+  const matchInfo = getMatchInfo();
+  const winner = matchInfo.teams.find((t) =>
+    t.players.some((p) => p.port == winnerPort)
+  );
+  if (winner) {
+    winner.score += 1;
+  }
+  updateMatchInfo(matchInfo);
+}
+
+/// Return port of winner or unknown (-1)
+// `index` variables are 0 indexed but ports are not
+function findWinningPort(game: SlippiGame): number {
   try {
     const gameSettings = game.getSettings();
     const end = game.getGameEnd();
@@ -263,62 +284,90 @@ export function determineWinner(game: SlippiGame): number {
       throw new Error("Current game does not exist");
     }
 
-    const latestFrame = _.get(game.getLatestFrame(), "players") || [];
+    const lf = game.getLatestFrame();
 
-    let playerStocks: number;
-    let oppStocks: number;
-
-    if (gameSettings.players.length != 2) {
-      // team game
-      // [playerStocks, oppStocks] = determineTeamWinner(game, end, gameSettings);
-      [playerStocks, oppStocks] = [0, 1];
-    } else {
-      // 0 is first player
-      // 1 is second player
-      playerStocks = _.get(latestFrame, [0, "post", "stocksRemaining"]);
-      oppStocks = _.get(latestFrame, [1, "post", "stocksRemaining"]);
+    if (!lf) {
+      context.nodecg.log.error("Could not get latest frame of slippi replay");
+      return -1;
     }
+
+    const stats = game.getStats();
+
+    const players = _.compact(_.values(lf.players)).map((p) => {
+      // Because we used `compact` these SHOULD all exist
+      // but we only care about ones that exist and are greater than 1 anyway
+      const ledgeGrabs = stats?.actionCounts.find(
+        (ps) => ps.playerIndex == (p.post.playerIndex ?? -1)
+      )?.ledgegrabCount;
+
+      return {
+        stocks: p.post.stocksRemaining ?? -1,
+        percent: p.post.percent ?? -1,
+        index: p.post.playerIndex ?? -1,
+        ledgeGrabs: ledgeGrabs ?? -1,
+      };
+    });
+
+    const LRASWinner = players.filter((p) => p.stocks > 1);
+    // this doesn't seem to work for %'s in a timeout so we're not going to use it there
+    const stockWinner = game.getWinners().pop()?.playerIndex ?? -1;
 
     switch (end.gameEndMethod) {
       case 1:
         // Time out
-        // could determine stocks/percent
-        return -1;
+        // if anyone > 60 ledge grabs use LGL
+        // if stocks even use %
+
+        // So we are printing the data in the log so it can be reviewed if necessary
+        context.nodecg.log.info(`Time out. Printing additional information`);
+        context.nodecg.log.info(players);
+        return (
+          players.reduce((prev, cur) => {
+            // TODO:
+            // Technically this is just whoever has more ledge grabs
+            // but it's unlikely that all players break the LGL
+            if (prev.ledgeGrabs > 60 || cur.ledgeGrabs > 60) {
+              return prev.ledgeGrabs < cur.ledgeGrabs ? prev : cur;
+            }
+
+            if (prev.stocks == cur.stocks) {
+              return prev.percent < cur.percent ? prev : cur;
+            }
+
+            return prev.stocks > cur.stocks ? prev : cur;
+          }).index + 1
+        );
       case 2:
-      case 3:
         // 2: Someone won on stocks
+        return stockWinner + 1;
+      case 3:
         // 3: Team won on stocks
-        if (playerStocks === 0 && oppStocks === 0) {
-          // Can this happen?
-          return -1;
-        }
-
-        return playerStocks === 0 ? 1 : 0;
+        // TODO: support this
+        // For a team we can probably just find the port of one winner and then return it
+        context.nodecg.log.error("CAN NOT HANDLE TEAM WINNER");
+        return -1;
       case 7:
-        // TODO: this might have changed
-
         // Someone pressed L+R+A+Start
-        // if only 1 player at 1 stock they probably lost
-        if (playerStocks === 1 && !(oppStocks === 1)) {
-          return 1;
-        } else if (!(playerStocks === 1) && oppStocks === 1) {
-          return 0;
+        // if only 1 player has more than 1 stock that player is probably the winner
+        if (LRASWinner.length == 1) {
+          return LRASWinner[0].index + 1;
         }
+
         // If nobody was at 1 stock there's no winner
         return -1;
     }
   } catch (err) {
-    context.nodecg.log.error("Error determining winner");
+    context.nodecg.log.error("Error determining winner in replay");
     context.nodecg.log.error(err);
   }
   return -1;
 }
 
 // interface FrameData {
-//     [playerIndex: number]: {
-//         pre: PreFrameUpdateType;
-//         post: PostFrameUpdateType;
-//     } | null;
+//   [playerIndex: number]: {
+//     pre: PreFrameUpdateType;
+//     post: PostFrameUpdateType;
+//   } | null;
 // }
 
 // TODO:

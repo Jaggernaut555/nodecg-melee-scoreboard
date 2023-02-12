@@ -1,11 +1,20 @@
 import { PlayerInfo, TeamInfo } from "../types/index.d";
 
-export function copyTeamInfo(info: TeamInfo): TeamInfo {
+export function copyTeamInfo(
+  info: TeamInfo,
+  playerOverride: PlayerInfo[] = []
+): TeamInfo {
   const temp = new TeamInfo();
 
-  info.players.forEach((p) => {
-    temp.players.push(copyPlayerInfo(p));
-  });
+  if (playerOverride && playerOverride.length > 0) {
+    playerOverride.forEach((p) => {
+      temp.players.push(copyPlayerInfo(p));
+    });
+  } else {
+    info.players.forEach((p) => {
+      temp.players.push(copyPlayerInfo(p));
+    });
+  }
 
   temp.bracket = info.bracket;
   temp.score = info.score;
