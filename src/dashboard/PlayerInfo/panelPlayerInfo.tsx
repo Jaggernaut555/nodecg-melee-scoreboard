@@ -63,6 +63,7 @@ function PanelPlayerInfo(props: PanelPlayerInfoProps) {
 
   // TODO:
   // support character colors
+  // Maybe in a dialog?
 
   return (
     <div>

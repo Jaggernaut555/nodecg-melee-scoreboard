@@ -39,6 +39,9 @@ function App() {
     }
   }, [matchInfo]);
 
+  // TODO:
+  // Replace the keepHidden check here with one in the component probably
+
   return (
     <div className="scoreboard">
       <TitlePlate
@@ -51,12 +54,24 @@ function App() {
           <PlayerScore
             score={team1Info.score}
             index={1}
-            keepHidden={hideScoreboard}
+            keepHidden={
+              hideScoreboard ||
+              !matchInfo.teams ||
+              !matchInfo.teams[0] ||
+              !matchInfo.teams[0].players ||
+              !matchInfo.teams[0].players[0]
+            }
           />
           <PlayerScore
             score={team2Info.score}
             index={2}
-            keepHidden={hideScoreboard}
+            keepHidden={
+              hideScoreboard ||
+              !matchInfo.teams ||
+              !matchInfo.teams[1] ||
+              !matchInfo.teams[1].players ||
+              !matchInfo.teams[1].players[0]
+            }
           />
         </div>
 
@@ -64,14 +79,26 @@ function App() {
           <PlayerName
             name={player1Info.name}
             index={1}
-            keepHidden={hideScoreboard}
+            keepHidden={
+              hideScoreboard ||
+              !matchInfo.teams ||
+              !matchInfo.teams[0] ||
+              !matchInfo.teams[0].players ||
+              !matchInfo.teams[0].players[0]
+            }
             character={player1Info.character}
             color={player1Info.color}
           />
           <PlayerName
             name={player2Info.name}
             index={2}
-            keepHidden={hideScoreboard}
+            keepHidden={
+              hideScoreboard ||
+              !matchInfo.teams ||
+              !matchInfo.teams[1] ||
+              !matchInfo.teams[1].players ||
+              !matchInfo.teams[1].players[0]
+            }
             character={player2Info.character}
             color={player2Info.color}
           />
@@ -82,12 +109,24 @@ function App() {
           <PlayerBracket
             bracket={team1Info.bracket}
             index={1}
-            keepHidden={hideScoreboard}
+            keepHidden={
+              hideScoreboard ||
+              !matchInfo.teams ||
+              !matchInfo.teams[0] ||
+              !matchInfo.teams[0].players ||
+              !matchInfo.teams[0].players[0]
+            }
           />
           <PlayerBracket
             bracket={team2Info.bracket}
             index={2}
-            keepHidden={hideScoreboard}
+            keepHidden={
+              hideScoreboard ||
+              !matchInfo.teams ||
+              !matchInfo.teams[1] ||
+              !matchInfo.teams[1].players ||
+              !matchInfo.teams[1].players[0]
+            }
           />
         </div>
       </div>

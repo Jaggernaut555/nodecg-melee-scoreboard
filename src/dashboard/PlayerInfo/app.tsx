@@ -1,9 +1,13 @@
 import React from "react";
 import { useReplicant } from "use-nodecg";
 import { MatchInfo, TeamInfo } from "../../types/index.d";
+import { copyMatchInfo, copyTeamInfo } from "../../util";
 import PanelTeamInfo from "./panelTeamInfo";
 
 function App() {
+  // NOTE: Do not mess with object properties directly.
+  // Copy it THEN modify those copied ones
+  // SEE: `info={copyTeamInfo(ti)} or `copyMatchInfo(matchInfo)` in this file
   const [matchInfo, setMatchInfo] = useReplicant<MatchInfo>(
     "matchInfo",
     new MatchInfo()
@@ -11,33 +15,33 @@ function App() {
 
   // const updatePlayerInfo = (e: React.MouseEvent) => {
   //     // TODO:
-  //     // use this instead of live updating?
+  //     // use this save button instead of live updating?
   //     // setPlayer1Info(player1DisplayedInfo);
   //     // setPlayer2Info(player2DisplayedInfo);
   // };
 
   const updateTeamInfo = (ti: TeamInfo, index: number) => {
-    // Modifying an existing team doesn't require using a temp variable
-    matchInfo.teams[index] = ti;
+    const newMatchInfo = copyMatchInfo(matchInfo);
+    newMatchInfo.teams[index] = ti;
+    setMatchInfo(newMatchInfo);
   };
 
   const addTeam = () => {
     const ti = new TeamInfo();
-    const newMatchInfo = matchInfo;
+    const newMatchInfo = copyMatchInfo(matchInfo);
     newMatchInfo.teams.push(ti);
     setMatchInfo(newMatchInfo);
   };
 
   const removeTeam = (index: number) => {
-    const newMatchInfo = matchInfo;
-    newMatchInfo.teams = matchInfo.teams.splice(index, 1);
-    if (!newMatchInfo.teams) {
-      newMatchInfo.teams = [];
-    }
+    const newMatchInfo = copyMatchInfo(matchInfo);
+    newMatchInfo.teams.splice(index, 1);
+    setMatchInfo(newMatchInfo);
   };
 
   // const swapPlayers = () => {
-  //     // send message to the function in extensions/API/api.ts
+  //   // TODO:
+  //   // send message to the function in extensions/API/api.ts
   // };
 
   return (
@@ -51,13 +55,16 @@ function App() {
                 index={index}
                 updateInfo={updateTeamInfo}
                 removeTeam={removeTeam}
-                info={ti}
+                info={copyTeamInfo(ti)}
               />
               <br />
             </div>
           );
         })}
-      <button disabled={matchInfo.teams.length >= 2} onClick={addTeam}>
+      <button
+        disabled={matchInfo.teams && matchInfo.teams.length >= 2}
+        onClick={addTeam}
+      >
         Add Team
       </button>
       {/* <button onClick={updatePlayerInfo}>update</button> */}

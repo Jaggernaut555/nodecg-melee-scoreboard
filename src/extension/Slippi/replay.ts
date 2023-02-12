@@ -253,8 +253,6 @@ function GameListener() {
 }
 
 function updateWinner() {
-  const end = currentGame.getGameEnd();
-
   const winnerPort = findWinningPort(currentGame);
 
   if (winnerPort == -1) {

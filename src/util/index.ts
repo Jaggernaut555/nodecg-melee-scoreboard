@@ -1,4 +1,14 @@
-import { PlayerInfo, TeamInfo } from "../types/index.d";
+import { MatchInfo, PlayerInfo, TeamInfo } from "../types/index.d";
+
+export function copyMatchInfo(info: MatchInfo): MatchInfo {
+  const temp = new MatchInfo();
+
+  info.teams.forEach((t) => {
+    temp.teams.push(copyTeamInfo(t));
+  });
+
+  return temp;
+}
 
 export function copyTeamInfo(
   info: TeamInfo,
