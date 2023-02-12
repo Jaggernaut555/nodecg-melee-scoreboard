@@ -71,9 +71,13 @@ function App() {
 
   return (
     <div>
-      <h1>Twitch</h1>
-      <label>Twitch User ID: </label>
-      <label>{twitchUserId}</label>
+      <div>
+        <label>You MUST be affiliate/partner to use this section</label>
+      </div>
+      <div>
+        <label>Twitch User ID: </label>
+        <label>{twitchUserId}</label>
+      </div>
       <div>
         <label>Set up an app as described </label>
         <a
