@@ -33,6 +33,7 @@ Robocopy ..\..\..\dashboard .\dashboard\ /s /e /NFL /NDL
 Robocopy ..\..\..\extension .\extension\ /s /e /NFL /NDL
 Robocopy ..\..\..\graphics .\graphics\ /s /e /NFL /NDL
 Robocopy ..\..\..\images .\images\ /s /e /NFL /NDL
+Robocopy ..\..\..\src .\src\ /s /e /NFL /NDL
 
 # Install the node_modules required in production
 npm install --omit=dev --legacy-peer-deps
