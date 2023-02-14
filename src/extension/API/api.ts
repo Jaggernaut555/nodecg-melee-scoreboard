@@ -150,7 +150,7 @@ function resetScore() {
 }
 
 function toggleScoreboard() {
-  const sb = nodecg.Replicant<boolean>("hideScoreboard");
+  const sb = context.nodecg.Replicant<boolean>("hideScoreboard");
 
   sb.value = !sb.value;
 }
