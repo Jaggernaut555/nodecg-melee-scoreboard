@@ -33,7 +33,7 @@ export function TeamName(props: teamNameProps) {
       setIsHidden(true);
       setAnimationRef(
         anime({
-          // after hide animation is completed (or if already hidden) update displayed score
+          // after hide animation is completed (or if already hidden) update displayed name
           targets: `.team_name.tn${props.index}`,
           easing: "linear",
           translateY: [40, 0],
@@ -53,7 +53,7 @@ export function TeamName(props: teamNameProps) {
       setIsHidden(true);
       setAnimationRef(
         anime({
-          // after hide animation is completed (or if already hidden) update displayed score
+          // after hide animation is completed (or if already hidden) update displayed name
           targets: `.team_name.tn${props.index}`,
           easing: "linear",
           translateY: [40, 0],
@@ -63,7 +63,7 @@ export function TeamName(props: teamNameProps) {
             updateInfo();
             setAnimationRef(
               anime({
-                // show score
+                // show name
                 targets: `.team_name.tn${props.index}`,
                 easing: "linear",
                 translateY: [0, 40],
@@ -82,7 +82,7 @@ export function TeamName(props: teamNameProps) {
       setIsAnimating(true);
       updateInfo();
       anime({
-        // show score
+        // show name
         targets: `.team_name.tn${props.index}`,
         easing: "linear",
         translateY: [0, 40],
