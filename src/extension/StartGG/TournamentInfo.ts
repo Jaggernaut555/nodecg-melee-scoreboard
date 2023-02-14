@@ -1,6 +1,6 @@
 import startGGContext from "./startGGContext";
 import { graphql } from "./gql";
-import { ConnectedAccounts, ConnectCodeIDs } from "./types";
+import { ConnectedAccounts, ConnectCodeIDs, SetInfo } from "./types";
 import context from "../context";
 import { ActivityState } from "./gql/graphql";
 import _ from "lodash";
@@ -44,6 +44,8 @@ const findSetsInEventQuery = graphql(`
         nodes {
           id
           state
+          fullRoundText
+          totalGames
           games {
             winnerId
           }
@@ -220,36 +222,47 @@ export async function findEntrantIDs(
   return results;
 }
 
-// TODO:
-// Do I need this still
-/// Finds the ID of the first found active set between two entrants
-// async function findCommonSet(entrantIds: string[]): Promise<string | null> {
-//   const eventId = await findEventId();
-//   if (!eventId) {
-//     return null;
-//   }
+// Finds the info of the first found active set between two entrants
+export async function findCommonSet(
+  connectCodeIDs: ConnectCodeIDs[]
+): Promise<SetInfo | null> {
+  const eventId = await findEventId();
+  if (!eventId) {
+    return null;
+  }
 
-//   const res = await startGGContext.client.request(findSetsInEventQuery, {
-//     eventId,
-//     entrantIds,
-//   });
+  const entrantIds = connectCodeIDs.map((cc) => cc.id);
 
-//   if (
-//     res.event &&
-//     res.event.sets &&
-//     res.event.sets.nodes &&
-//     res.event.sets.nodes
-//   ) {
-//     // check for a currently active set between them
-//     const activeSet = res.event.sets.nodes.find((s) => s?.state == 2);
+  const res = await startGGContext.client.request(findSetsInEventQuery, {
+    eventId,
+    entrantIds,
+  });
 
-//     if (activeSet && activeSet.id) {
-//       return activeSet.id;
-//     }
-//   }
+  if (
+    res.event &&
+    res.event.sets &&
+    res.event.sets.nodes &&
+    res.event.sets.nodes
+  ) {
+    // check for a currently active set between them
+    const activeSet = res.event.sets.nodes.find((s) => s?.state == 2);
 
-//   return null;
-// }
+    if (
+      activeSet &&
+      activeSet.id &&
+      activeSet.totalGames &&
+      activeSet.fullRoundText
+    ) {
+      return {
+        id: activeSet.id,
+        bestOf: activeSet.totalGames,
+        roundInfo: activeSet.fullRoundText,
+      };
+    }
+  }
+
+  return null;
+}
 
 // TODO: this should accept a set id and return the won game IDs
 // The other stuff should be done elsewhere and call this

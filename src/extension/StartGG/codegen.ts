@@ -1,6 +1,9 @@
 import { CodegenConfig } from "@graphql-codegen/cli";
+import * as dotenv from "dotenv";
 
-const token = "";
+dotenv.config();
+
+const token = process.env.STARTGG_ACCESS_TOKEN;
 
 const config: CodegenConfig = {
   schema: [
@@ -28,7 +31,7 @@ const config: CodegenConfig = {
 export default config;
 
 // To update schema (if out of date)
-// Set the token value
+// Set STARTGG_ACCESS_TOKEN in a local .env file
 // npm run codegen
 // DO NOT COMMIT A TOKEN
 

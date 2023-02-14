@@ -13,3 +13,9 @@ export declare type ConnectCodeIDs = {
   id: string;
   displayName: string;
 };
+
+export declare type SetInfo = {
+  id: string;
+  roundInfo: string;
+  bestOf: number;
+};

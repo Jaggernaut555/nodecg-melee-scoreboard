@@ -15,13 +15,14 @@ import {
 import * as path from "path";
 import context from "../context";
 import * as StartGG from "../StartGG/TournamentInfo";
+import { formatStartGGRound } from "../StartGG/util";
 
 let currentGame: SlippiGame;
 let currentGameWatcher: chokidar.FSWatcher;
 let replayWatcher: chokidar.FSWatcher | null;
 
 // TODO: can make this an interact-able setting
-const testingMode = false;
+const testingMode = true;
 
 export async function initReplay() {
   const slippiFolder =
@@ -230,7 +231,14 @@ async function setNames(gameSettings: GameStartType) {
         teams.map((t) => t.players[0].code)
       );
 
-      if (playerIDs.length > 0 && playerIDs.every((p) => p)) {
+      // Update info based on StartGG set data if both players are found
+      if (playerIDs.length == 2) {
+        const setInfo = await StartGG.findCommonSet(playerIDs);
+
+        if (setInfo) {
+          updateSubtitle(formatStartGGRound(setInfo));
+        }
+
         const games = await StartGG.findWonGamesOfSet(playerIDs);
 
         // Set the player's StartGG name and the score of their set
@@ -440,4 +448,9 @@ function updateMatchInfo(matchInfo: MatchInfo): void {
 
 function getMatchInfo() {
   return context.nodecg.readReplicant<MatchInfo>("matchInfo");
+}
+
+function updateSubtitle(subtitle: string) {
+  const subtitleInfo = context.nodecg.Replicant<string>("TournamentSubtitle");
+  subtitleInfo.value = subtitle;
 }
