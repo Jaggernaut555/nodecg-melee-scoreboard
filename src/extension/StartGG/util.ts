@@ -1,5 +1,8 @@
 import { SetInfo } from "./types";
 
 export function formatStartGGRound(roundInfo: SetInfo) {
-  return `${roundInfo.roundInfo} - Bo${roundInfo.bestOf}`;
+  const includeBestOf = roundInfo.bestOf > 0;
+  return `${roundInfo.roundInfo}${
+    includeBestOf ? ` - Bo${roundInfo.bestOf}` : ""
+  }`;
 }

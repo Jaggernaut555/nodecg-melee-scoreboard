@@ -28,6 +28,45 @@ const findEntrantsInEventQuery = graphql(`
   }
 `);
 
+const findSetIdQuery = graphql(`
+  query FindSetId($eventId: ID!, $entrantIds: [ID]!) {
+    event(id: $eventId) {
+      id
+      name
+      sets(sortType: STANDARD, filters: { entrantIds: $entrantIds }) {
+        nodes {
+          id
+          state
+        }
+      }
+    }
+  }
+`);
+
+const findSetInfoQuery = graphql(`
+  query findSetInfo($setId: ID!) {
+    set(id: $setId) {
+      id
+      state
+      fullRoundText
+      round
+      phaseGroup {
+        rounds {
+          bestOf
+          number
+        }
+      }
+      slots {
+        id
+        entrant {
+          id
+          name
+        }
+      }
+    }
+  }
+`);
+
 // Not sure what states are what other than 3 is COMPLETED
 const findSetsInEventQuery = graphql(`
   query EventSets($eventId: ID!, $entrantIds: [ID]!) {
@@ -38,9 +77,6 @@ const findSetsInEventQuery = graphql(`
         sortType: STANDARD
         filters: { hideEmpty: true, state: [1, 2, 4], entrantIds: $entrantIds }
       ) {
-        pageInfo {
-          total
-        }
         nodes {
           id
           state
@@ -223,7 +259,7 @@ export async function findEntrantIDs(
 }
 
 // Finds the info of the first found active set between two entrants
-export async function findCommonSet(
+export async function findCommonSetInfo(
   connectCodeIDs: ConnectCodeIDs[]
 ): Promise<SetInfo | null> {
   const eventId = await findEventId();
@@ -233,31 +269,53 @@ export async function findCommonSet(
 
   const entrantIds = connectCodeIDs.map((cc) => cc.id);
 
-  const res = await startGGContext.client.request(findSetsInEventQuery, {
+  const setIdRes = await startGGContext.client.request(findSetIdQuery, {
     eventId,
     entrantIds,
   });
 
+  const retVal: SetInfo = {
+    id: "",
+    roundInfo: "",
+    bestOf: -1,
+  };
+
   if (
-    res.event &&
-    res.event.sets &&
-    res.event.sets.nodes &&
-    res.event.sets.nodes
+    setIdRes.event &&
+    setIdRes.event.sets &&
+    setIdRes.event.sets.nodes &&
+    setIdRes.event.sets.nodes
   ) {
     // check for a currently active set between them
-    const activeSet = res.event.sets.nodes.find((s) => s?.state == 2);
+    const activeSet = setIdRes.event.sets.nodes.find((s) => s?.state == 2);
 
-    if (
-      activeSet &&
-      activeSet.id &&
-      activeSet.totalGames &&
-      activeSet.fullRoundText
-    ) {
-      return {
-        id: activeSet.id,
-        bestOf: activeSet.totalGames,
-        roundInfo: activeSet.fullRoundText,
-      };
+    if (activeSet && activeSet.id) {
+      // We have the set id
+      // Now we need to try to find the round info
+      const setInfoRes = await startGGContext.client.request(findSetInfoQuery, {
+        setId: activeSet.id,
+      });
+
+      if (setInfoRes && setInfoRes.set && setInfoRes.set.fullRoundText) {
+        retVal.id = activeSet.id;
+        retVal.roundInfo = setInfoRes.set.fullRoundText;
+
+        if (
+          setInfoRes.set.round &&
+          setInfoRes.set.phaseGroup &&
+          setInfoRes.set.phaseGroup.rounds &&
+          setInfoRes.set.phaseGroup.rounds.some(
+            (r) => r?.number == setInfoRes.set?.round
+          )
+        ) {
+          retVal.bestOf =
+            setInfoRes.set.phaseGroup.rounds.find(
+              (r) => r?.number == setInfoRes.set?.round
+            )?.bestOf ?? -1;
+        }
+
+        return retVal;
+      }
     }
   }
 

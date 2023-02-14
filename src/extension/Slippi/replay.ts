@@ -22,7 +22,7 @@ let currentGameWatcher: chokidar.FSWatcher;
 let replayWatcher: chokidar.FSWatcher | null;
 
 // TODO: can make this an interact-able setting
-const testingMode = true;
+const testingMode = false;
 
 export async function initReplay() {
   const slippiFolder =
@@ -233,7 +233,7 @@ async function setNames(gameSettings: GameStartType) {
 
       // Update info based on StartGG set data if both players are found
       if (playerIDs.length == 2) {
-        const setInfo = await StartGG.findCommonSet(playerIDs);
+        const setInfo = await StartGG.findCommonSetInfo(playerIDs);
 
         if (setInfo) {
           updateSubtitle(formatStartGGRound(setInfo));
