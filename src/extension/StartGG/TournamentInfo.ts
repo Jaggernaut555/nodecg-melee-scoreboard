@@ -176,7 +176,8 @@ export async function findEntrantIDs(
         !entrant ||
         !entrant.id ||
         !entrant.participants ||
-        entrant.participants?.length == 0
+        entrant.participants?.length == 0 ||
+        !entrant.participants[0]?.gamerTag
       ) {
         continue;
       }
@@ -203,6 +204,7 @@ export async function findEntrantIDs(
         results.push({
           code: entrantCode,
           id: entrant.id,
+          displayName: entrant.participants[0].gamerTag,
         });
       }
     }

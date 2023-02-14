@@ -88,6 +88,7 @@ function App() {
             }
             character={player1Info.character}
             color={player1Info.color}
+            teamName={team1Info.name}
           />
           <PlayerName
             name={player2Info.name}
@@ -101,6 +102,7 @@ function App() {
             }
             character={player2Info.character}
             color={player2Info.color}
+            teamName={team2Info.name}
           />
         </div>
       </div>

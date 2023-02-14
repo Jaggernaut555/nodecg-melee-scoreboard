@@ -230,18 +230,20 @@ async function setNames(gameSettings: GameStartType) {
         teams.map((t) => t.players[0].code)
       );
 
-      console.log(playerIDs);
       if (playerIDs.length > 0 && playerIDs.every((p) => p)) {
         const games = await StartGG.findWonGamesOfSet(playerIDs);
 
-        games.forEach((g) => {
-          teams.forEach((t) => {
-            t.players.forEach((p) => {
-              if (p.code == g) {
-                t.score += 1;
-              }
-            });
-          });
+        // Set the player's StartGG name and the score of their set
+        teams.forEach((t) => {
+          const code = t.players[0].code;
+          const pid = playerIDs.find((p) => p.code == code);
+
+          if (pid) {
+            t.name = pid.displayName;
+          }
+
+          const gamesWon = games.filter((g) => g == code).length;
+          t.score += gamesWon;
         });
       }
     }

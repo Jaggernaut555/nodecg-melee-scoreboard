@@ -11,4 +11,5 @@ declare type SlippiAccount = {
 export declare type ConnectCodeIDs = {
   code: string;
   id: string;
+  displayName: string;
 };

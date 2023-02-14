@@ -13,6 +13,7 @@ export class TeamInfo {
   score = 0;
   bracket: Bracket = "[W]";
   outcomeId = "";
+  name = "";
 }
 
 // replicants must be an object, not an array

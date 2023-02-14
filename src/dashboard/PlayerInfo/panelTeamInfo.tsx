@@ -12,6 +12,7 @@ interface PanelTeamInfoProps {
 function PanelTeamInfo(props: PanelTeamInfoProps) {
   const [teamScore, setTeamScore] = useState<number>(props.info.score);
   const [teamBracket, setTeamBracket] = useState<Bracket>(props.info.bracket);
+  const [teamName, setTeamName] = useState<string>(props.info.name);
 
   // TODO: limit this to max 3 players or something
   // unless want to support crew battle or something
@@ -44,6 +45,12 @@ function PanelTeamInfo(props: PanelTeamInfoProps) {
     props.updateInfo(teamInfo, props.index);
   };
 
+  const updateTeamName = () => {
+    const teamInfo = props.info;
+    teamInfo.name = teamName;
+    props.updateInfo(teamInfo, props.index);
+  };
+
   // const removePlayer = () => {
   //     // TODO: remove player
   // }
@@ -51,16 +58,18 @@ function PanelTeamInfo(props: PanelTeamInfoProps) {
   useEffect(() => {
     if (teamBracket != props.info.bracket) setTeamBracket(props.info.bracket);
     if (teamScore != props.info.score) setTeamScore(props.info.score);
+    if (teamName != props.info.name) setTeamName(props.info.name);
     // We don't want to call this on updates to the displayed info
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.info.score, props.info.bracket]);
+  }, [props.info.score, props.info.bracket, props.info.name]);
 
   useEffect(() => {
     if (teamBracket != props.info.bracket) updateBracket();
     if (teamScore != props.info.score) updateScore();
+    if (teamName != props.info.name) updateTeamName();
     // We don't want to call this on updates to the props
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [teamBracket, teamScore]);
+  }, [teamBracket, teamScore, teamName]);
 
   // create a thing for each member of the team
   return (
@@ -84,6 +93,13 @@ function PanelTeamInfo(props: PanelTeamInfoProps) {
           <option value="[W]">winners</option>
           <option value="[L]">losers</option>
         </select>
+        <input
+          type="text"
+          placeholder="Team Name"
+          style={{ width: "70px" }}
+          onChange={(e) => setTeamName(e.target.value)}
+          value={teamName}
+        />
         <button hidden={props.info.players.length > 0} onClick={addPlayer}>
           Add Player
         </button>

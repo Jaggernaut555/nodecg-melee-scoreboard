@@ -29,6 +29,7 @@ export function copyTeamInfo(
   temp.bracket = info.bracket;
   temp.score = info.score;
   temp.outcomeId = info.outcomeId;
+  temp.name = info.name;
 
   return temp;
 }

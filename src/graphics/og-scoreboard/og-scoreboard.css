@@ -60,16 +60,33 @@ img {
     clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%);
 }
 
-.players {
-    position: absolute;
-    width: 400px;
-    max-width: 400px;
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    z-index: 0;
+.player_name_position {
+  position: absolute;
+  width: 400px;
+  max-width: 400px;
+  height: 80px;
+  line-height: 40px;
+  text-align: center;
+  z-index: 0;
+}
 
-    clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%);
+.player_name_animation {
+  position: relative;
+}
+
+.players {
+  position: relative;
+  clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%);
+
+}
+
+.team_name {
+  position: relative;
+  clip-path: polygon(0% 0%, 100% 0%, 95% 100%, 5% 100%);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  z-index: -1;
 }
 
 .scaling {
@@ -91,11 +108,11 @@ img.icon {
     height: 24px;
 }
 
-.players.p1 {
+.player_name_position.p1 {
     left: 240px;
 }
 
-.players.p2 {
+.player_name_position.p2 {
     right: 240px;
 }
 

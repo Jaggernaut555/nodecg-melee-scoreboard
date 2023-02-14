@@ -1,21 +1,14 @@
 import * as React from "react";
 import anime from "animejs";
-import TeamName from "./teamName";
 
-interface playerNameProps {
-  // TODO: rework this so it accepts team of multiple players instead of just one
+interface teamNameProps {
   name: string;
-  character: string;
-  color: string;
   index: 1 | 2;
   keepHidden: boolean;
-  teamName: string;
 }
 
-function PlayerName(props: playerNameProps) {
+export function TeamName(props: teamNameProps) {
   const [displayedName, setDisplayedName] = React.useState("");
-  const [displayedCharacter, setDisplayedCharacter] = React.useState("");
-  const [displayedColor, setDisplayedColor] = React.useState("");
   const [, setAnimationRef] = React.useState<
     ReturnType<typeof anime> | undefined
   >();
@@ -24,15 +17,11 @@ function PlayerName(props: playerNameProps) {
 
   React.useLayoutEffect(() => {
     const isChanged = () => {
-      return (
-        props.character != displayedCharacter || props.name != displayedName
-      );
+      return props.name != displayedName;
     };
 
     const updateInfo = () => {
       setDisplayedName(props.name);
-      setDisplayedCharacter(props.character);
-      setDisplayedColor(props.color);
     };
 
     if (isAnimating || (props.keepHidden && isHidden)) {
@@ -45,9 +34,10 @@ function PlayerName(props: playerNameProps) {
       setAnimationRef(
         anime({
           // after hide animation is completed (or if already hidden) update displayed score
-          targets: `.player_name_animation.p${props.index}`,
+          targets: `.team_name.tn${props.index}`,
           easing: "linear",
           translateY: [40, 0],
+          translateX: ["-50%", "-50%"],
           duration: 1000,
           complete: function () {
             setIsAnimating(false);
@@ -64,18 +54,20 @@ function PlayerName(props: playerNameProps) {
       setAnimationRef(
         anime({
           // after hide animation is completed (or if already hidden) update displayed score
-          targets: `.player_name_animation.p${props.index}`,
+          targets: `.team_name.tn${props.index}`,
           easing: "linear",
           translateY: [40, 0],
+          translateX: ["-50%", "-50%"],
           duration: 700,
           complete: function () {
             updateInfo();
             setAnimationRef(
               anime({
                 // show score
-                targets: `.player_name_animation.p${props.index}`,
+                targets: `.team_name.tn${props.index}`,
                 easing: "linear",
                 translateY: [0, 40],
+                translateX: ["-50%", "-50%"],
                 duration: 700,
                 complete: function () {
                   setIsAnimating(false);
@@ -91,9 +83,10 @@ function PlayerName(props: playerNameProps) {
       updateInfo();
       anime({
         // show score
-        targets: `.player_name_animation.p${props.index}`,
+        targets: `.team_name.tn${props.index}`,
         easing: "linear",
         translateY: [0, 40],
+        translateX: ["-50%", "-50%"],
         duration: 1000,
         complete: function () {
           setIsAnimating(false);
@@ -103,46 +96,18 @@ function PlayerName(props: playerNameProps) {
     }
   }, [
     props.name,
-    props.character,
     isHidden,
     props.keepHidden,
     isAnimating,
-    props.color,
     props.index,
-    displayedCharacter,
     displayedName,
   ]);
 
-  // TODO:
-  // Support teams
-
   return (
-    <div className={`player_name_position p${props.index}`}>
-      <div className={`player_name_animation p${props.index} hidden animated`}>
-        <div className={`players p${props.index} color1 `}>
-          {props.index == 1 && (
-            <img
-              src={`../images/StockIcons/${displayedCharacter}/${displayedColor}.png`}
-            ></img>
-          )}
-          <span> {displayedName} </span>
-          {props.index != 1 && (
-            <img
-              src={`../images/StockIcons/${displayedCharacter}/${displayedColor}.png`}
-            ></img>
-          )}
-        </div>
-        <TeamName
-          name={props.teamName}
-          index={props.index}
-          keepHidden={
-            props.keepHidden ||
-            props.teamName.toLowerCase() == props.name.toLowerCase()
-          }
-        />
-      </div>
+    <div className={`team_name tn${props.index} color3 hidden animated`}>
+      {displayedName}
     </div>
   );
 }
 
-export default PlayerName;
+export default TeamName;
