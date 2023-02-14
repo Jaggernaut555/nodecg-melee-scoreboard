@@ -52,6 +52,8 @@ function PanelPlayerInfo(props: PanelPlayerInfoProps) {
       },
       props.index
     );
+    // We don't want to call this on updates to the props
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerName, playerCode, playerChar]);
 
   useEffect(() => {
@@ -59,6 +61,8 @@ function PanelPlayerInfo(props: PanelPlayerInfoProps) {
     if (props.info.code !== playerCode) setPlayerCode(props.info.code);
     if (props.info.character !== playerChar)
       setPlayerChar(props.info.character);
+    // We don't want to call this on updates to the displayed info
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.info]);
 
   // TODO:

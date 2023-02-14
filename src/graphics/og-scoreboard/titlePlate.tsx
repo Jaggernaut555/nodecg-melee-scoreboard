@@ -96,7 +96,7 @@ function TitlePlate(props: titlePlateProps) {
         },
       });
     }
-  }, [props.title, isHidden, props.keepHidden]);
+  }, [props.title, isHidden, props.keepHidden, isAnimating, displayedTitle]);
 
   useEffect(() => {
     if (
@@ -174,7 +174,13 @@ function TitlePlate(props: titlePlateProps) {
         })
       );
     }
-  }, [props.subtitle, isHiddenSubtitle, props.keepHidden]);
+  }, [
+    props.subtitle,
+    isHiddenSubtitle,
+    props.keepHidden,
+    isAnimatingSubtitle,
+    displayedSubtitle,
+  ]);
 
   return (
     <div className="sc_titleBox hidden">

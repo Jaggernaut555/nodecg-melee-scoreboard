@@ -37,6 +37,8 @@ function App() {
     if (clientId != displayedClientId) setDisplayedClientId(clientId);
     if (clientSecret != displayedClientSecret)
       setDisplayedClientSecret(clientSecret);
+    // We don't want to call this on updates to the displayed info
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientId, clientSecret]);
 
   const tryConnect = () => {

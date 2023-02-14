@@ -4,7 +4,7 @@ import { initAPI } from "./API/api";
 import { MatchInfo } from "../types/index.d";
 import { version, name } from "../../package.json";
 import { initTwitch } from "./Twitch";
-
+import { initStartGG } from "./StartGG";
 import context from "./context";
 
 module.exports = function (nodecg: NodeCG) {
@@ -29,6 +29,7 @@ module.exports = function (nodecg: NodeCG) {
   initAPI();
   initSlippi();
   initTwitch();
+  initStartGG();
 };
 
 function initReplicants() {

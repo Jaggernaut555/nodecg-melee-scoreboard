@@ -51,11 +51,15 @@ function PanelTeamInfo(props: PanelTeamInfoProps) {
   useEffect(() => {
     if (teamBracket != props.info.bracket) setTeamBracket(props.info.bracket);
     if (teamScore != props.info.score) setTeamScore(props.info.score);
+    // We don't want to call this on updates to the displayed info
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.info.score, props.info.bracket]);
 
   useEffect(() => {
     if (teamBracket != props.info.bracket) updateBracket();
     if (teamScore != props.info.score) updateScore();
+    // We don't want to call this on updates to the props
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamBracket, teamScore]);
 
   // create a thing for each member of the team

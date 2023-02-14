@@ -85,7 +85,14 @@ function PlayerScore(props: playerScoreProps) {
         },
       });
     }
-  }, [props.score, isHidden, props.keepHidden]);
+  }, [
+    props.score,
+    isHidden,
+    props.keepHidden,
+    isAnimating,
+    props.index,
+    displayedScore,
+  ]);
 
   return (
     <div className={`scores s${props.index} color2 slow hidden`}>

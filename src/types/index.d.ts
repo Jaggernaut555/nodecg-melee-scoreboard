@@ -1,3 +1,5 @@
+// TODO: rename this file to types.ts or index.ts and redo all imports
+
 export class PlayerInfo {
   name = "";
   code = "";

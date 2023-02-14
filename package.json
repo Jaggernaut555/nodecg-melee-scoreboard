@@ -77,6 +77,14 @@
         "fullbleed": false,
         "headerColor": "#525F78",
         "width": 3
+      },
+      {
+        "name": "StartGG",
+        "title": "StartGG",
+        "file": "StartGGPanel.html",
+        "fullbleed": false,
+        "headerColor": "#525F78",
+        "width": 3
       }
     ],
     "graphics": [
@@ -91,6 +99,8 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@graphql-codegen/cli": "^3.0.0",
+    "@graphql-codegen/client-preset": "^2.0.0",
     "@parcel/transformer-typescript-tsc": "^2.8.3",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
@@ -110,6 +120,7 @@
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "nodecg-types": "^1.9.0",
     "nodemon": "^2.0.20",
     "os-browserify": "^0.3.0",
@@ -132,6 +143,8 @@
     "animejs": "^3.2.1",
     "chokidar": "^3.5.3",
     "express-session": "^1.17.3",
+    "graphql": "^16.6.0",
+    "graphql-request": "^5.1.0",
     "lodash": "^4.17.21",
     "passport": "^0.6.0",
     "react": "^18.2.0",
@@ -143,6 +156,7 @@
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
     "clean": "rimraf extension/ graphics/ dashboard/ dist/",
+    "codegen": "graphql-codegen --config src/extension/StartGG/codegen.ts",
     "dev": "concurrently \"npm:watch:*\" \"npm:dev:server-only\"",
     "dev:no-server": "concurrently \"npm:watch:*\"",
     "dev:server-only": "nodemon -r source-map-support/register --watch extension ../../index.js",

@@ -92,7 +92,14 @@ function PlayerName(props: playerNameProps) {
         },
       });
     }
-  }, [props.bracket, isHidden, props.keepHidden]);
+  }, [
+    props.bracket,
+    isHidden,
+    props.keepHidden,
+    isAnimating,
+    props.index,
+    displayedBracket,
+  ]);
 
   return (
     <div className={`WL p${props.index} color3 slow hidden`}>

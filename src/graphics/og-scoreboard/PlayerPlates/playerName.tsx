@@ -19,17 +19,19 @@ function PlayerName(props: playerNameProps) {
   const [isHidden, setIsHidden] = React.useState(true);
   const [isAnimating, setIsAnimating] = React.useState(false);
 
-  const isChanged = () => {
-    return props.character != displayedCharacter || props.name != displayedName;
-  };
-
-  const updateInfo = () => {
-    setDisplayedName(props.name);
-    setDisplayedCharacter(props.character);
-    setDisplayedColor(props.color);
-  };
-
   React.useLayoutEffect(() => {
+    const isChanged = () => {
+      return (
+        props.character != displayedCharacter || props.name != displayedName
+      );
+    };
+
+    const updateInfo = () => {
+      setDisplayedName(props.name);
+      setDisplayedCharacter(props.character);
+      setDisplayedColor(props.color);
+    };
+
     if (isAnimating || (props.keepHidden && isHidden)) {
       return;
     }
@@ -96,7 +98,17 @@ function PlayerName(props: playerNameProps) {
         },
       });
     }
-  }, [props.name, props.character, isHidden, props.keepHidden]);
+  }, [
+    props.name,
+    props.character,
+    isHidden,
+    props.keepHidden,
+    isAnimating,
+    props.color,
+    props.index,
+    displayedCharacter,
+    displayedName,
+  ]);
 
   // TODO:
   // Will have to adjust placement for teams

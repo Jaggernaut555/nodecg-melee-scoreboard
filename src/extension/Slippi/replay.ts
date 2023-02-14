@@ -14,6 +14,7 @@ import {
 } from "../../types/index.d";
 import * as path from "path";
 import context from "../context";
+import * as StartGG from "../StartGG/TournamentInfo";
 
 let currentGame: SlippiGame;
 let currentGameWatcher: chokidar.FSWatcher;
@@ -184,9 +185,6 @@ async function setNames(gameSettings: GameStartType) {
       }
     }
 
-    // TODO:
-    // if code is empty/null use port
-
     const matchInfo = getMatchInfo();
 
     // here will always be one team per new player
@@ -226,6 +224,26 @@ async function setNames(gameSettings: GameStartType) {
     } else {
       context.nodecg.log.debug("new players");
       matchInfo.teams = teams;
+
+      // If new players then try checking StartGG for any previous matches
+      const playerIDs = await StartGG.findEntrantIDs(
+        teams.map((t) => t.players[0].code)
+      );
+
+      console.log(playerIDs);
+      if (playerIDs.length > 0 && playerIDs.every((p) => p)) {
+        const games = await StartGG.findWonGamesOfSet(playerIDs);
+
+        games.forEach((g) => {
+          teams.forEach((t) => {
+            t.players.forEach((p) => {
+              if (p.code == g) {
+                t.score += 1;
+              }
+            });
+          });
+        });
+      }
     }
 
     updateMatchInfo(matchInfo);
