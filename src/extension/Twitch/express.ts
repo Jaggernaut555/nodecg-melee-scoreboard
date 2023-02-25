@@ -130,6 +130,7 @@ function initApi() {
   const twitchClientId = context.nodecg.readReplicant<string>("twitchClientId");
   const twitchClientSecret =
     context.nodecg.readReplicant<string>("twitchClientSecret");
+  const twitchUser = context.nodecg.readReplicant<string>("twitchUserId");
 
   if (!twitchClientId || !twitchClientSecret) {
     context.nodecg.log.error(
@@ -146,19 +147,17 @@ function initApi() {
   }
 
   if (!twitchContext.authProvider) {
-    twitchContext.authProvider = new RefreshingAuthProvider(
-      {
-        clientId: twitchClientId,
-        clientSecret: twitchClientSecret,
-        onRefresh: async (newToken) => {
-          const tokenData =
-            context.nodecg.Replicant<AccessToken>("twitchAccessToken");
-          tokenData.value = newToken;
-          context.nodecg.log.debug("Refreshing token");
-        },
+    twitchContext.authProvider = new RefreshingAuthProvider({
+      clientId: twitchClientId,
+      clientSecret: twitchClientSecret,
+      onRefresh: async (newToken: AccessToken) => {
+        const tokenData =
+          context.nodecg.Replicant<AccessToken>("twitchAccessToken");
+        tokenData.value = newToken;
+        context.nodecg.log.debug("Refreshing token");
       },
-      token
-    );
+    });
+    twitchContext.authProvider.addUser(twitchUser, token);
   }
   if (!twitchContext.api) {
     twitchContext.api = new ApiClient({

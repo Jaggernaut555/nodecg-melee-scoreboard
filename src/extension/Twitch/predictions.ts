@@ -4,6 +4,46 @@ import { getPlayerIdentifier } from "../../util";
 import twitchContext from "./twitchContext";
 import context from "../context";
 
+// prediction time in seconds
+// TODO: could configure in ui
+const PREDICTION_TIME = 180;
+
+export async function updatePredictionStatus() {
+  const twitchUser = context.nodecg.readReplicant<string>("twitchUserId");
+  const predictionId = context.nodecg.readReplicant<string>(
+    "twitchCurrentPredictionId"
+  );
+  const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
+    "twitchCurrentPredictionStatus"
+  );
+
+  if (!twitchUser || !predictionId) {
+    predictionStatus.value = "Stopped";
+    return;
+  }
+
+  return twitchContext.api.predictions
+    .getPredictionById(twitchUser, predictionId)
+    .then((pred) => {
+      // If no prediction set to stopped
+      if (!pred) {
+        predictionStatus.value = "Stopped";
+        return;
+      }
+
+      // if it has ended set to stopped
+      if (pred.endDate) {
+        predictionStatus.value = "Stopped";
+      } else if (pred.lockDate) {
+        // if it is locked set to locked
+        predictionStatus.value = "Locked";
+      } else {
+        // if it is running set to started
+        predictionStatus.value = "Started";
+      }
+    });
+}
+
 // TODO: Could track prediction stats and display them on overlay
 export function createPrediction() {
   const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
@@ -26,7 +66,7 @@ export function createPrediction() {
       outcomes: matchInfo.value.teams.map((t) =>
         t.players.map((p) => getPlayerIdentifier(p)).join("+")
       ),
-      autoLockAfter: 180,
+      autoLockAfter: PREDICTION_TIME,
     })
     .then((pred) => {
       const predictionId = context.nodecg.Replicant<string>(
@@ -40,6 +80,11 @@ export function createPrediction() {
         "twitchCurrentPredictionStatus"
       );
       predictionStatus.value = "Started";
+
+      // Try to update the prediction status just after it should time out
+      setTimeout(() => {
+        updatePredictionStatus();
+      }, (PREDICTION_TIME + 5) * 1000);
     })
     .catch((err) => {
       context.nodecg.log.error(err);
@@ -116,6 +161,10 @@ export function cancelPrediction() {
 
   if (!twitchUser || !predictionId) {
     context.nodecg.log.error("Can't cancel prediction");
+    const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
+      "twitchCurrentPredictionStatus"
+    );
+    predictionStatus.value = "Stopped";
     return;
   }
 
