@@ -30,6 +30,7 @@ export function copyTeamInfo(
   temp.score = info.score;
   temp.outcomeId = info.outcomeId;
   temp.name = info.name;
+  temp.pointBet = info.pointBet;
 
   return temp;
 }

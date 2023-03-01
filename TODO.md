@@ -19,12 +19,16 @@ Betting graphic
 Console-relay
 - add support for console relay instead of slippi replays
   - replays are only good for spectating slippi matches
+- probably track wins/character changes by port
+  - if ports change should scores reset
 
 StartGG match selector
 - pop up dialog that shows all matches that are ongoing or ready to start
   - select the match happening of available matches
   - populates player names and round info
     - character info and wins can still be tracked via console-relay
+  - populate scores already reported if any
+    - with console-replay these probably won't be updated in real time
 - More useful with console-relay than replay directory
 - have to be able to swap players if left/right are not correct
 
@@ -32,7 +36,7 @@ StartGG match selector
 
 Not counting hand warmer games
 - while prediction is ongoing could ignore results of the game
-- assuming that prediction match is a handwarmer
+- assuming that prediction match is a hand warmer
 - not sure of any other way we can detect if the game is a hand warmer
   - We may be jumping in to an already started game
 

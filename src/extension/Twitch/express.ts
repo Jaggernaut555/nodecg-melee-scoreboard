@@ -150,7 +150,9 @@ function initApi() {
     twitchContext.authProvider = new RefreshingAuthProvider({
       clientId: twitchClientId,
       clientSecret: twitchClientSecret,
-      onRefresh: async (newToken: AccessToken) => {
+      // TODO:
+      // DEPRECATION WARNING: please update your onRefresh callback to take a user ID as first parameter
+      onRefresh: async (userId: string, newToken: AccessToken) => {
         const tokenData =
           context.nodecg.Replicant<AccessToken>("twitchAccessToken");
         tokenData.value = newToken;

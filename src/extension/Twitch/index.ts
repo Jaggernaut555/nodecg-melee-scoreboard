@@ -9,6 +9,7 @@ import {
   resolvePrediction,
   lockPrediction,
   progressPrediction,
+  initEventSubListener,
 } from "./predictions";
 import twitchContext from "./twitchContext";
 
@@ -17,6 +18,7 @@ export function initTwitch() {
   initReplicants();
   initTwitchExpress();
   cleanApi();
+  initEventSubListener();
 }
 
 function initReplicants() {

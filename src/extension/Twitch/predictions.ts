@@ -1,5 +1,6 @@
 import { MatchInfo, TwitchPredictionStatus } from "../../types/index.d";
 import { getPlayerIdentifier } from "../../util";
+import { EventSubWsListener } from "@twurple/eventsub-ws";
 
 import twitchContext from "./twitchContext";
 import context from "../context";
@@ -8,43 +9,6 @@ import context from "../context";
 // TODO: could configure in ui
 const PREDICTION_TIME = 180;
 
-export async function updatePredictionStatus() {
-  const twitchUser = context.nodecg.readReplicant<string>("twitchUserId");
-  const predictionId = context.nodecg.readReplicant<string>(
-    "twitchCurrentPredictionId"
-  );
-  const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
-    "twitchCurrentPredictionStatus"
-  );
-
-  if (!twitchUser || !predictionId) {
-    predictionStatus.value = "Stopped";
-    return;
-  }
-
-  return twitchContext.api.predictions
-    .getPredictionById(twitchUser, predictionId)
-    .then((pred) => {
-      // If no prediction set to stopped
-      if (!pred) {
-        predictionStatus.value = "Stopped";
-        return;
-      }
-
-      // if it has ended set to stopped
-      if (pred.endDate) {
-        predictionStatus.value = "Stopped";
-      } else if (pred.lockDate) {
-        // if it is locked set to locked
-        predictionStatus.value = "Locked";
-      } else {
-        // if it is running set to started
-        predictionStatus.value = "Started";
-      }
-    });
-}
-
-// TODO: Could track prediction stats and display them on overlay
 export function createPrediction() {
   const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
   const subtitle = context.nodecg.readReplicant<string>("TournamentSubtitle");
@@ -76,15 +40,6 @@ export function createPrediction() {
       pred.outcomes.forEach((outcomes, i) => {
         matchInfo.value.teams[i].outcomeId = outcomes.id;
       });
-      const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
-        "twitchCurrentPredictionStatus"
-      );
-      predictionStatus.value = "Started";
-
-      // Try to update the prediction status just after it should time out
-      setTimeout(() => {
-        updatePredictionStatus();
-      }, (PREDICTION_TIME + 5) * 1000);
     })
     .catch((err) => {
       context.nodecg.log.error(err);
@@ -106,10 +61,6 @@ export function lockPrediction() {
     .lockPrediction(twitchUser, predictionId)
     .then((pred) => {
       context.nodecg.log.debug(`Locked prediction ${pred.id}`);
-      const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
-        "twitchCurrentPredictionStatus"
-      );
-      predictionStatus.value = "Locked";
     })
     .catch((err) => {
       context.nodecg.log.error(err);
@@ -142,10 +93,6 @@ export function resolvePrediction() {
     .resolvePrediction(twitchUser, predictionId, winners[0].outcomeId)
     .then((pred) => {
       context.nodecg.log.debug(`Completed prediction ${predictionId}`);
-      const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
-        "twitchCurrentPredictionStatus"
-      );
-      predictionStatus.value = "Stopped";
       context.nodecg.log.debug(`resolved ${pred.id}`);
     })
     .catch((err) => {
@@ -172,13 +119,14 @@ export function cancelPrediction() {
     .cancelPrediction(twitchUser, predictionId)
     .then((pred) => {
       context.nodecg.log.debug(`Cancelled prediction ${pred.id}`);
+    })
+    .catch((err) => {
+      context.nodecg.log.error(err);
+      // If we can't cancel it make sure the prediction is stopped
       const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
         "twitchCurrentPredictionStatus"
       );
       predictionStatus.value = "Stopped";
-    })
-    .catch((err) => {
-      context.nodecg.log.error(err);
     });
 }
 
@@ -201,4 +149,66 @@ export function progressPrediction() {
       context.nodecg.log.error("Invalid state to progress prediction");
       return;
   }
+}
+
+export function initEventSubListener() {
+  const twitchUser = context.nodecg.readReplicant<string>("twitchUserId");
+
+  const listener = new EventSubWsListener({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    apiClient: twitchContext.api as any,
+    // TODO:
+    // for some reason type @twurple/api/lib/client/ApiClient
+    // is not assignable to type
+    // @twurple/eventsub-base/node_modules/@twurple/api/lib/client/ApiClient
+  });
+
+  listener.start();
+
+  listener.onChannelPredictionBegin(twitchUser, (pred) => {
+    const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
+      "twitchCurrentPredictionStatus"
+    );
+    predictionStatus.value = "Started";
+    const predictionId = context.nodecg.Replicant<string>(
+      "twitchCurrentPredictionId"
+    );
+    predictionId.value = pred.id;
+  });
+
+  listener.onChannelPredictionEnd(twitchUser, (pred) => {
+    const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
+      "twitchCurrentPredictionStatus"
+    );
+    predictionStatus.value = "Stopped";
+    const predictionId = context.nodecg.Replicant<string>(
+      "twitchCurrentPredictionId"
+    );
+    predictionId.value = "";
+  });
+
+  listener.onChannelPredictionLock(twitchUser, (pred) => {
+    const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
+      "twitchCurrentPredictionStatus"
+    );
+    predictionStatus.value = "Locked";
+    const predictionId = context.nodecg.Replicant<string>(
+      "twitchCurrentPredictionId"
+    );
+    predictionId.value = pred.id;
+  });
+
+  // This gets updated every time someone bets
+  listener.onChannelPredictionProgress(twitchUser, (pred) => {
+    const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
+
+    for (const outcome of pred.outcomes) {
+      const t = matchInfo.value.teams.find((t) => t.outcomeId == outcome.id);
+
+      if (t) {
+        t.pointBet = outcome.channelPoints;
+        console.log(t.pointBet);
+      }
+    }
+  });
 }

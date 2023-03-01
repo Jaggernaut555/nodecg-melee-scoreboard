@@ -13,6 +13,10 @@ export class TeamInfo {
   score = 0;
   bracket: Bracket = "[W]";
   outcomeId = "";
+  /**
+   * The amount of channel points bet on this team
+   */
+  pointBet = 0;
   name = "";
 }
 
@@ -27,4 +31,8 @@ export type SlippiMethod = "realtime" | "fileWatcher";
 
 export type ConnectionStatus = "connected" | "disconnected";
 
-export type TwitchPredictionStatus = "Started" | "Locked" | "Stopped";
+export type TwitchPredictionStatus =
+  | "Started"
+  | "Locked"
+  | "Stopped"
+  | "External";

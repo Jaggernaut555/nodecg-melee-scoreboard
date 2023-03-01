@@ -1,7 +1,6 @@
 import { MatchInfo, TwitchPredictionStatus } from "../../types/index.d";
 import { copyTeamInfo } from "../../util";
 import context from "../context";
-import { updatePredictionStatus } from "../Twitch/predictions";
 
 interface scoreDTO {
   team: number;
@@ -54,11 +53,11 @@ export function initAPI() {
   });
 
   app.post("/api/v1/prediction", async (req, res) => {
-    res.send(await updatePrediction(req.body));
+    res.send(updatePrediction(req.body));
   });
 
   app.get("/api/v1/prediction", (req, res) => {
-    res.send(getPrediction());
+    res.send(updatePrediction({ operation: "get" }));
   });
 
   context.nodecg.mount(app);
@@ -160,17 +159,7 @@ function toggleScoreboard() {
   sb.value = !sb.value;
 }
 
-function getPrediction() {
-  const predictionStatus = context.nodecg.readReplicant<TwitchPredictionStatus>(
-    "twitchCurrentPredictionStatus"
-  );
-  return { status: predictionStatus };
-}
-
-async function updatePrediction(dto: predictionDTO) {
-  // make sure the status is correct
-  await updatePredictionStatus();
-
+function updatePrediction(dto: predictionDTO) {
   const predictionStatus = context.nodecg.readReplicant<TwitchPredictionStatus>(
     "twitchCurrentPredictionStatus"
   );
