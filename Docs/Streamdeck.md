@@ -1,3 +1,9 @@
+# Use the StreamDeck Plugin
+
+Available at the [streamdeck-nodecg-melee-scoreboard](https://github.com/Jaggernaut555/streamdeck-nodecg-melee-scoreboard) repo.
+
+# Below is an alternative method using an API plugin
+
 # Example
 
 ![Streamdeck Example](Streamdeck-example.png)
