@@ -63,7 +63,7 @@ export function initWebsocket() {
     });
   });
 
-  io.listen(8080);
+  io.listen(9091);
 
   initReplicantListeners();
 }

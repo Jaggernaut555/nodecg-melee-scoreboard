@@ -1,0 +1,43 @@
+body {
+    margin: 0px;
+    color: white;
+    font-family: Tahoma;
+    text-shadow: 2px 2px black;
+    font-size: 24px;
+}
+
+.colorB {
+    background: rgb(0, 0, 0);
+}
+
+.color1 {
+    background: rgb(255, 110, 184);
+}
+
+.color2 {
+    background: rgb(44, 19, 164);
+}
+
+.color3 {
+    background: rgb(195, 63, 110);
+}
+
+img {
+    vertical-align: middle;
+}
+
+.prediction-box {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  top: 25%;
+  text-align: center;
+}
+
+.prediction-box.pb1 {
+  left: -200;
+}
+
+.prediction-box.pb2 {
+  right: -200;
+}

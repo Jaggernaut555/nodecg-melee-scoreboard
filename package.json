@@ -94,6 +94,24 @@
         "width": 1920,
         "height": 1080,
         "singleInstance": false
+      },
+      {
+        "name": "prediction-default",
+        "file": "prediction-default.html",
+        "width": 1920,
+        "height": 1080,
+        "singleInstance": false
+      }
+    ],
+    "soundCues": [
+      {
+        "name": "prediction-start",
+        "assignable": false,
+        "defaultFile": "sounds/alert-1.mp3"
+      },
+      {
+        "name": "prediction-end",
+        "defaultFile": "sounds/winner-1.mp3"
       }
     ]
   },
@@ -151,6 +169,7 @@
     "passport": "^0.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "socket.io": "^4.6.1",
     "use-nodecg": "^0.4.0"
   },
   "scripts": {

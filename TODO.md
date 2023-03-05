@@ -13,9 +13,6 @@ Set end graphic
     - top better only
     - or all betters
 
-Betting graphic
-- Can show how much is bet on each player
-
 Console-relay
 - add support for console relay instead of slippi replays
   - replays are only good for spectating slippi matches
@@ -40,7 +37,14 @@ Not counting hand warmer games
 - not sure of any other way we can detect if the game is a hand warmer
   - We may be jumping in to an already started game
 
+Make prediction graphic look better
+
+Make scoreboard graphic look better
+
 # fixes
 
 Allow selecting character color on dashboard
 - could make character selector a pop up window that shows all characters and character colors
+
+The players leaving a re-connecting broke predictions for some reason
+- Not sure what happened here

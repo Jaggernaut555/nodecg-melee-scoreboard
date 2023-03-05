@@ -4,6 +4,7 @@ import { EventSubWsListener } from "@twurple/eventsub-ws";
 
 import twitchContext from "./twitchContext";
 import context from "../context";
+import { MessageType } from "../../types/messages";
 
 // prediction time in seconds
 // TODO: could configure in ui
@@ -174,6 +175,8 @@ export function initEventSubListener() {
       "twitchCurrentPredictionId"
     );
     predictionId.value = pred.id;
+
+    context.nodecg.sendMessage(MessageType.PredictionStarted);
   });
 
   listener.onChannelPredictionEnd(twitchUser, (pred) => {
@@ -185,6 +188,15 @@ export function initEventSubListener() {
       "twitchCurrentPredictionId"
     );
     predictionId.value = "";
+
+    if (pred.winningOutcomeId) {
+      context.nodecg.sendMessage(
+        MessageType.PredictionEnded,
+        pred.winningOutcomeId
+      );
+    } else {
+      context.nodecg.sendMessage(MessageType.PredictionCancelled);
+    }
   });
 
   listener.onChannelPredictionLock(twitchUser, (pred) => {
@@ -196,6 +208,8 @@ export function initEventSubListener() {
       "twitchCurrentPredictionId"
     );
     predictionId.value = pred.id;
+
+    context.nodecg.sendMessage(MessageType.PredictionLocked);
   });
 
   // This gets updated every time someone bets
@@ -207,7 +221,6 @@ export function initEventSubListener() {
 
       if (t) {
         t.pointBet = outcome.channelPoints;
-        console.log(t.pointBet);
       }
     }
   });
