@@ -1,6 +1,7 @@
 import { MatchInfo, TwitchPredictionStatus } from "../../types/index.d";
 import { copyTeamInfo } from "../../util";
 import context from "../context";
+import { initWebsocket } from "./websocket";
 
 interface scoreDTO {
   team: number;
@@ -61,6 +62,8 @@ export function initAPI() {
   });
 
   context.nodecg.mount(app);
+
+  initWebsocket();
 }
 
 // TODO:
