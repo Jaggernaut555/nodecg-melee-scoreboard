@@ -176,6 +176,16 @@ export function initEventSubListener() {
     );
     predictionId.value = pred.id;
 
+    const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
+
+    for (const outcome of pred.outcomes) {
+      const t = matchInfo.value.teams.find((t) => t.outcomeId == outcome.id);
+
+      if (t) {
+        t.pointBet = 0;
+      }
+    }
+
     context.nodecg.sendMessage(MessageType.PredictionStarted);
   });
 

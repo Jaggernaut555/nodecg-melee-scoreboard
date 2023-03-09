@@ -61,6 +61,9 @@ function App() {
     if (matchInfo.teams.length == 2) {
       setTeam1Info(matchInfo.teams[0]);
       setTeam2Info(matchInfo.teams[1]);
+    } else {
+      setTeam1Info(new TeamInfo());
+      setTeam2Info(new TeamInfo());
     }
   }, [matchInfo]);
 
@@ -70,13 +73,13 @@ function App() {
         pointsBet={team1Info.pointBet}
         index={1}
         hidden={isHidden}
-        won={winnerId == team1Info.outcomeId}
+        won={!!team1Info.outcomeId && winnerId == team1Info.outcomeId}
       ></PredictionBox>
       <PredictionBox
         pointsBet={team2Info.pointBet}
         index={2}
         hidden={isHidden}
-        won={winnerId == team2Info.outcomeId}
+        won={!!team2Info.outcomeId && winnerId == team2Info.outcomeId}
       ></PredictionBox>
     </div>
   );
