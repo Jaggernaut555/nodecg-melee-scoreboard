@@ -2,7 +2,14 @@ import startGGContext from "./startGGContext";
 import { graphql } from "./gql";
 import { ConnectedAccounts, ConnectCodeIDs, SetInfo } from "./types";
 import context from "../context";
-import { ActivityState } from "./gql/graphql";
+import {
+  ActivityState,
+  EventEntrantsQuery,
+  EventSetsQuery,
+  FindSetIdQuery,
+  FindSetInfoQuery,
+  TournamentQueryQuery,
+} from "./gql/graphql";
 import _ from "lodash";
 
 const findEntrantsInEventQuery = graphql(`
@@ -155,10 +162,17 @@ async function findEventId(): Promise<string | null> {
     return null;
   }
 
-  const eventIdRes = await startGGContext.client.request(
-    findEventIdQuery,
-    tournamentInfo
-  );
+  let eventIdRes: TournamentQueryQuery;
+  try {
+    const eir = await startGGContext.client.request(
+      findEventIdQuery,
+      tournamentInfo
+    );
+    eventIdRes = eir;
+  } catch (e) {
+    context.nodecg.log.error(e);
+    return null;
+  }
 
   if (
     !eventIdRes.tournament ||
@@ -191,11 +205,19 @@ export async function findEntrantIDs(
   }
 
   while (keepGoing) {
-    const res = await startGGContext.client.request(findEntrantsInEventQuery, {
-      eventId,
-      page,
-      perPage,
-    });
+    let res: EventEntrantsQuery;
+    try {
+      const r = await startGGContext.client.request(findEntrantsInEventQuery, {
+        eventId,
+        page,
+        perPage,
+      });
+      res = r;
+    } catch (e) {
+      // If this errors just return none of the results
+      context.nodecg.log.error(e);
+      return [];
+    }
 
     if (
       !res.event ||
@@ -269,10 +291,18 @@ export async function findCommonSetInfo(
 
   const entrantIds = connectCodeIDs.map((cc) => cc.id);
 
-  const setIdRes = await startGGContext.client.request(findSetIdQuery, {
-    eventId,
-    entrantIds,
-  });
+  let setIdRes: FindSetIdQuery;
+
+  try {
+    const sir = await startGGContext.client.request(findSetIdQuery, {
+      eventId,
+      entrantIds,
+    });
+    setIdRes = sir;
+  } catch (e) {
+    context.nodecg.log.error(e);
+    return null;
+  }
 
   const retVal: SetInfo = {
     id: "",
@@ -292,9 +322,16 @@ export async function findCommonSetInfo(
     if (activeSet && activeSet.id) {
       // We have the set id
       // Now we need to try to find the round info
-      const setInfoRes = await startGGContext.client.request(findSetInfoQuery, {
-        setId: activeSet.id,
-      });
+      let setInfoRes: FindSetInfoQuery;
+      try {
+        const sir = await startGGContext.client.request(findSetInfoQuery, {
+          setId: activeSet.id,
+        });
+        setInfoRes = sir;
+      } catch (e) {
+        context.nodecg.log.error(e);
+        return null;
+      }
 
       if (setInfoRes && setInfoRes.set && setInfoRes.set.fullRoundText) {
         retVal.id = activeSet.id;
@@ -334,10 +371,17 @@ export async function findWonGamesOfSet(
 
   const entrantIds = connectCodeIDs.map((cc) => cc.id);
 
-  const res = await startGGContext.client.request(findSetsInEventQuery, {
-    eventId,
-    entrantIds,
-  });
+  let res: EventSetsQuery;
+  try {
+    const r = await startGGContext.client.request(findSetsInEventQuery, {
+      eventId,
+      entrantIds,
+    });
+    res = r;
+  } catch (e) {
+    context.nodecg.log.error(e);
+    return [];
+  }
 
   if (
     res.event &&
