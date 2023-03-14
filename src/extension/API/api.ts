@@ -17,6 +17,10 @@ interface predictionDTO {
   operation: "progress" | "create" | "lock" | "cancel" | "resolve" | "get";
 }
 
+interface scoreboardDTO {
+  operation: "get" | "on" | "off" | "toggle";
+}
+
 // This is mostly for controlling quick actions with the stream deck
 // But other things could use this api too
 export function initAPI() {
@@ -45,13 +49,12 @@ export function initAPI() {
 
   // TODO: this should allow 'on', 'off', and 'toggle'
   app.post("/api/v1/scoreboard", (req, res) => {
-    toggleScoreboard();
+    updateScoreboardHidden(req.body);
     res.sendStatus(200);
   });
 
   app.get("/api/v1/scoreboard", (req, res) => {
-    const val = context.nodecg.readReplicant<boolean>("hideScoreboard");
-    res.send(val != true ? "on" : "off");
+    res.send(updateScoreboardHidden({ operation: "get" }) ? "on" : "off");
   });
 
   app.post("/api/v1/prediction", async (req, res) => {
@@ -150,10 +153,25 @@ function resetScore() {
   });
 }
 
-function toggleScoreboard() {
+function updateScoreboardHidden(dto: scoreboardDTO) {
   const sb = context.nodecg.Replicant<boolean>("hideScoreboard");
 
-  sb.value = !sb.value;
+  switch (dto.operation) {
+    case "on":
+      sb.value = true;
+      break;
+    case "off":
+      sb.value = false;
+      break;
+    case "toggle":
+      sb.value = !sb.value;
+      break;
+    case "get":
+    default:
+      break;
+  }
+
+  return sb.value;
 }
 
 function updatePrediction(dto: predictionDTO) {
