@@ -8,7 +8,7 @@ import { MessageType } from "../../types/messages";
 
 // prediction time in seconds
 // TODO: could configure in ui
-const PREDICTION_TIME = 180;
+const PREDICTION_TIME = 300;
 
 export function createPrediction() {
   const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
