@@ -178,15 +178,20 @@ export function initEventSubListener() {
 
     const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
 
+    let teamsFound = 0;
     for (const outcome of pred.outcomes) {
       const t = matchInfo.value.teams.find((t) => t.outcomeId == outcome.id);
 
       if (t) {
+        teamsFound += 1;
         t.pointBet = 0;
       }
     }
 
-    context.nodecg.sendMessage(MessageType.PredictionStarted);
+    // No use displaying the graphic if the prediction doesn't match what we expected from the setup
+    if (teamsFound == 2) {
+      context.nodecg.sendMessage(MessageType.PredictionStarted);
+    }
   });
 
   listener.onChannelPredictionEnd(twitchUser, (pred) => {

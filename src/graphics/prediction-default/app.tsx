@@ -43,6 +43,10 @@ function App() {
   });
 
   useListenFor(MessageType.PredictionEnded, (justWonId: string) => {
+    if (team1Info.outcomeId != justWonId && team2Info.outcomeId != justWonId) {
+      return;
+    }
+
     setWinnerId(justWonId);
     setIsHidden(false);
 

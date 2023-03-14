@@ -1,5 +1,17 @@
 import { MatchInfo, PlayerInfo, TeamInfo } from "../types/index.d";
 
+export function swapTeamInfo(info: MatchInfo): MatchInfo {
+  const temp = copyMatchInfo(info);
+
+  const temp1 = copyTeamInfo(info.teams[0]);
+  const temp2 = copyTeamInfo(info.teams[1]);
+
+  temp.teams[0] = temp2;
+  temp.teams[1] = temp1;
+
+  return temp;
+}
+
 export function copyMatchInfo(info: MatchInfo): MatchInfo {
   const temp = new MatchInfo();
 

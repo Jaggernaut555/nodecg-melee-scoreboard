@@ -1,5 +1,5 @@
 import { MatchInfo, TwitchPredictionStatus } from "../../types/index.d";
-import { copyTeamInfo } from "../../util";
+import { swapTeamInfo } from "../../util";
 import context from "../context";
 import { initWebsocket } from "./websocket";
 
@@ -43,6 +43,7 @@ export function initAPI() {
     res.sendStatus(200);
   });
 
+  // TODO: this should allow 'on', 'off', and 'toggle'
   app.post("/api/v1/scoreboard", (req, res) => {
     toggleScoreboard();
     res.sendStatus(200);
@@ -66,9 +67,6 @@ export function initAPI() {
   initWebsocket();
 }
 
-// TODO:
-// this could probably be in a helper method somewhere and re-used by the dashboard
-// instead of duplicate code functionality
 function swapPlayers() {
   const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
 
@@ -77,11 +75,7 @@ function swapPlayers() {
     matchInfo.value.teams &&
     matchInfo.value.teams.length == 2
   ) {
-    const temp1 = copyTeamInfo(matchInfo.value.teams[0]);
-    const temp2 = copyTeamInfo(matchInfo.value.teams[1]);
-
-    matchInfo.value.teams[0] = temp2;
-    matchInfo.value.teams[1] = temp1;
+    matchInfo.value = swapTeamInfo(matchInfo.value);
   } else {
     console.log("can't swap these teams");
   }
