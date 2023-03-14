@@ -47,7 +47,6 @@ export function initAPI() {
     res.sendStatus(200);
   });
 
-  // TODO: this should allow 'on', 'off', and 'toggle'
   app.post("/api/v1/scoreboard", (req, res) => {
     updateScoreboardHidden(req.body);
     res.sendStatus(200);

@@ -96,6 +96,13 @@ Swap player positions on the right/left side of the scoreboard
 - Title: Anything you want
 - Request Type: Post
 - API URL: http://localhost:9090/api/v1/scoreboard
+- Data:
+```
+{
+    "operation": "toggle"
+}
+```
+  - Other valid operations are "on" and "off"
 
 ### Display on/off
 - Title: *LEAVE EMPTY*
