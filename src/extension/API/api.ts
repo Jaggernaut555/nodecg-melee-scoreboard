@@ -5,12 +5,12 @@ import { initWebsocket } from "./websocket";
 
 interface scoreDTO {
   team: number;
-  operation: "add" | "subtract" | "get";
+  operation: "add" | "subtract" | "get" | "reset";
 }
 
 interface bracketDTO {
   team: number;
-  bracket: "toggle" | "get";
+  operation: "winners" | "losers" | "toggle" | "get";
 }
 
 interface predictionDTO {
@@ -69,7 +69,7 @@ export function initAPI() {
   initWebsocket();
 }
 
-function swapPlayers() {
+export function swapPlayers() {
   const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
 
   if (
@@ -79,11 +79,11 @@ function swapPlayers() {
   ) {
     matchInfo.value = swapTeamInfo(matchInfo.value);
   } else {
-    console.log("can't swap these teams");
+    context.nodecg.log.error("can't swap these teams");
   }
 }
 
-function updateScore(dto: scoreDTO) {
+export function updateScore(dto: scoreDTO) {
   const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
 
   if (
@@ -104,17 +104,20 @@ function updateScore(dto: scoreDTO) {
       matchInfo.value.teams[dto.team].score =
         matchInfo.value.teams[dto.team].score - 1;
       break;
+    case "reset":
+      matchInfo.value.teams[dto.team].score = 0;
+      break;
     case "get":
       return { score: matchInfo.value.teams[dto.team].score };
     default:
-      console.log("failed to update score");
+      context.nodecg.log.error("failed to update score");
       break;
   }
 
   return;
 }
 
-function updateBracket(dto: bracketDTO) {
+export function updateBracket(dto: bracketDTO) {
   const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
 
   if (
@@ -126,7 +129,7 @@ function updateBracket(dto: bracketDTO) {
     return { error: "team does not exist" };
   }
 
-  switch (dto.bracket) {
+  switch (dto.operation) {
     case "toggle":
       if (matchInfo.value.teams[dto.team].bracket == "[L]") {
         matchInfo.value.teams[dto.team].bracket = "[W]";
@@ -134,17 +137,23 @@ function updateBracket(dto: bracketDTO) {
         matchInfo.value.teams[dto.team].bracket = "[L]";
       }
       break;
+    case "winners":
+      matchInfo.value.teams[dto.team].bracket = "[W]";
+      break;
+    case "losers":
+      matchInfo.value.teams[dto.team].bracket = "[L]";
+      break;
     case "get":
       return { bracket: matchInfo.value.teams[dto.team].bracket };
     default:
-      console.log("failed to update bracket");
+      context.nodecg.log.error("failed to update bracket");
       break;
   }
 
   return;
 }
 
-function resetScore() {
+export function resetScore() {
   const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
 
   matchInfo.value.teams.forEach((t, i) => {
@@ -152,7 +161,7 @@ function resetScore() {
   });
 }
 
-function updateScoreboardHidden(dto: scoreboardDTO) {
+export function updateScoreboardHidden(dto: scoreboardDTO) {
   const sb = context.nodecg.Replicant<boolean>("hideScoreboard");
 
   switch (dto.operation) {
@@ -173,7 +182,7 @@ function updateScoreboardHidden(dto: scoreboardDTO) {
   return sb.value;
 }
 
-function updatePrediction(dto: predictionDTO) {
+export function updatePrediction(dto: predictionDTO) {
   const predictionStatus = context.nodecg.readReplicant<TwitchPredictionStatus>(
     "twitchCurrentPredictionStatus"
   );

@@ -1,6 +1,13 @@
 import { Server } from "socket.io";
 import { MatchInfo, TwitchPredictionStatus } from "../../types/index.d";
 import context from "../context";
+import {
+  swapPlayers,
+  updateBracket,
+  updatePrediction,
+  updateScore,
+  updateScoreboardHidden,
+} from "./api";
 
 let io: Server;
 
@@ -60,6 +67,29 @@ export function initWebsocket() {
       io.to("HideScoreboard").emit("HideScoreboardUpdate", {
         HideScoreboard: hideScoreboard,
       });
+    });
+
+    client.on("Update", (data) => {
+      switch (data.type) {
+        case "bracket":
+          updateBracket(data);
+          break;
+        case "score":
+          updateScore(data);
+          break;
+        case "prediction":
+          updatePrediction(data);
+          break;
+        case "hideScoreboard":
+          updateScoreboardHidden(data);
+          break;
+        default:
+          context.nodecg.log.error("Got a bad Websocket Update request");
+      }
+    });
+
+    client.on("Swap", () => {
+      swapPlayers();
     });
   });
 
