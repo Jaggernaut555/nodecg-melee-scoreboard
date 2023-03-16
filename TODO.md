@@ -20,6 +20,8 @@ Console-relay
   - if ports change should scores reset
 
 StartGG match selector
+- The StartGG requests are 503-ing a decent amount on the auto-find
+  - this feature would essentially allow us to try again
 - pop up dialog that shows all matches that are ongoing or ready to start
   - select the match happening of available matches
   - populates player names and round info
@@ -45,6 +47,3 @@ Make scoreboard graphic look better
 
 Allow selecting character color on dashboard
 - could make character selector a pop up window that shows all characters and character colors
-
-The players leaving a re-connecting broke predictions for some reason
-- Not sure what happened here

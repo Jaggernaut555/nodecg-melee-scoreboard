@@ -28,6 +28,7 @@ const findEntrantsInEventQuery = graphql(`
             id
             gamerTag
             connectedAccounts
+            prefix
           }
         }
       }
@@ -99,6 +100,7 @@ const findSetsInEventQuery = graphql(`
               name
               participants {
                 connectedAccounts
+                prefix
               }
             }
           }
@@ -261,10 +263,15 @@ export async function findEntrantIDs(
       const entrantCode = `${groups[1].toUpperCase()}#${groups[2]}`;
 
       if (codes.some((c) => c == entrantCode)) {
+        let displayName = entrant.participants[0].gamerTag;
+        // if they have a prefix, add it
+        if (entrant.participants[0].prefix) {
+          displayName = `${entrant.participants[0].prefix} ${displayName}`;
+        }
         results.push({
           code: entrantCode,
           id: entrant.id,
-          displayName: entrant.participants[0].gamerTag,
+          displayName: displayName,
         });
       }
     }
