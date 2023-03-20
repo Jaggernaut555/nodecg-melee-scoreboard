@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useReplicant } from "use-nodecg";
+import ReplicantTextInput from "../util/ReplicantTextInput";
 
 function App() {
   const [hideScoreboard, setHideScoreboard] = useReplicant<boolean>(
@@ -12,63 +13,33 @@ function App() {
     ""
   );
 
-  const [displayedHideScoreboard, setDisplayedHideScoreboard] =
-    useState<boolean>(hideScoreboard);
-  const [displayedTitle, setDisplayedTitle] = useState<string>(title);
-  const [displayedSubtitle, setDisplayedSubtitle] = useState<string>(subtitle);
-
-  useEffect(() => {
-    setDisplayedTitle(title);
-    setDisplayedSubtitle(subtitle);
-    setDisplayedHideScoreboard(hideScoreboard);
-  }, [title, subtitle, hideScoreboard]);
-
-  const updateTitleInfo = () => {
-    setTitle(displayedTitle);
-    setSubtitle(displayedSubtitle);
-    setHideScoreboard(displayedHideScoreboard);
-  };
-
-  const updateHideScoreboard = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDisplayedHideScoreboard(e.target.checked);
-  };
-
-  const handlePressEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      updateTitleInfo();
-    }
+  const updateHideScoreboard = () => {
+    setHideScoreboard(!hideScoreboard);
   };
 
   return (
     <div>
       <div>
-        <label>hide scoreboard</label>
-        <input
-          type="checkbox"
-          id="hideScoreboardCheckbox"
-          checked={displayedHideScoreboard}
-          onChange={(e) => updateHideScoreboard(e)}
-        ></input>
+        <button onClick={updateHideScoreboard}>
+          {hideScoreboard ? "show" : "hide"} scoreboard
+        </button>
       </div>
       <div>
         <label>Main Title</label>
-        <input
-          type="text"
-          value={displayedTitle}
-          onKeyDown={handlePressEnter}
-          onChange={(e) => setDisplayedTitle(e.target.value)}
-        ></input>
+        <ReplicantTextInput
+          autosave={false}
+          saveChanges={setTitle}
+          data={title}
+        />
       </div>
       <div>
         <label>Subtitle</label>
-        <input
-          type="text"
-          value={displayedSubtitle}
-          onKeyDown={handlePressEnter}
-          onChange={(e) => setDisplayedSubtitle(e.target.value)}
-        ></input>
+        <ReplicantTextInput
+          autosave={false}
+          saveChanges={setSubtitle}
+          data={subtitle}
+        />
       </div>
-      <button onClick={updateTitleInfo}>update</button>
     </div>
   );
 }

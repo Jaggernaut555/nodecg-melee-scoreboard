@@ -37,7 +37,7 @@ Robocopy ..\..\..\sounds .\sounds\ /s /e /NFL /NDL
 Robocopy ..\..\..\src .\src\ /s /e /NFL /NDL
 
 # Install the node_modules required in production
-npm install --omit=dev --legacy-peer-deps
+npm install --omit=dev
 
 ## Zip file for release
 Set-Location ..\..\..

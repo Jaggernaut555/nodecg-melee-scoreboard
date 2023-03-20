@@ -42,6 +42,10 @@ function App() {
           onChange={(e) => setDisplayedStartGGUrl(e.target.value)}
         />
       </div>
+      {/* <div>
+        <label>Automatically search StartGG</label>
+        <input type="checkbox"></input>
+      </div> */}
       <button onClick={saveChanges}>Save</button>
     </div>
   );
