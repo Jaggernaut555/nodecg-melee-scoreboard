@@ -1,6 +1,6 @@
 {
   "name": "nodecg-melee-scoreboard",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "A scoreboard for slippi spectating",
   "homepage": "",
   "author": {
@@ -89,7 +89,7 @@
       {
         "name": "StartGGMatchDialog",
         "title": "StartGG Match Selector",
-        "file":"StartGGMatchDialog.html",
+        "file": "StartGGMatchDialog.html",
         "headerColor": "#525F78",
         "width": 5,
         "dialog": true,
