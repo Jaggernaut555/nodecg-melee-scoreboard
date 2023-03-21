@@ -28,16 +28,35 @@ export function setTeamsFromCCIDs(playerIDs: ConnectCodeID[]) {
   const matchInfo = context.nodecg.Replicant<MatchInfo>(Replicants.MatchInfo);
 
   if (playerIDs.length == 2) {
-    const teams: TeamInfo[] = [];
-    playerIDs.forEach((ccid) => {
-      const ti = new TeamInfo();
-      ti.name = ccid.displayName;
-      const pi = new PlayerInfo();
-      pi.code = ccid.code;
-      ti.players.push(pi);
-      teams.push(ti);
-    });
-    matchInfo.value.teams = teams;
+    if (
+      matchInfo.value.teams.every((t) => {
+        return t.players.every((op) => {
+          return playerIDs.some((p) => p.code == op.code);
+        });
+      })
+    ) {
+      // Selecting a match from StartGG after already spectating a match just update the information
+      matchInfo.value.teams.forEach((t) => {
+        const code = t.players[0].code;
+        const pid = playerIDs.find((p) => p.code == code);
+
+        if (pid) {
+          t.name = pid.displayName;
+        }
+      });
+    } else {
+      // Make new teams
+      const teams: TeamInfo[] = [];
+      playerIDs.forEach((ccid) => {
+        const ti = new TeamInfo();
+        ti.name = ccid.displayName;
+        const pi = new PlayerInfo();
+        pi.code = ccid.code;
+        ti.players.push(pi);
+        teams.push(ti);
+      });
+      matchInfo.value.teams = teams;
+    }
   } else {
     context.nodecg.log.error("Not two players found fot setTeamsFromCCIDs");
   }
