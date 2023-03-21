@@ -29,7 +29,7 @@ export function setTeamsFromCCIDs(playerIDs: ConnectCodeID[]) {
 
   if (playerIDs.length == 2) {
     const teams: TeamInfo[] = [];
-    playerIDs.forEach((ccid, i) => {
+    playerIDs.forEach((ccid) => {
       const ti = new TeamInfo();
       ti.name = ccid.displayName;
       const pi = new PlayerInfo();

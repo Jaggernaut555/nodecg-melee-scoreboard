@@ -5,7 +5,7 @@ import context from "../context";
 import { graphql } from "./gql";
 import { StreamQueueInfoQuery, StreamQueueSetsQuery } from "./gql/graphql";
 import startGGContext from "./startGGContext";
-import { findSetInfo, findWonGamesOfSet } from "./TournamentInfo";
+import { findSetInfo } from "./TournamentInfo";
 import { ConnectCodeID } from "./types";
 import {
   CONNECT_CODE_REGEX,

@@ -28,12 +28,14 @@ function ReplicantTextInput(props: ReplicantInputProps) {
     } else if (displayData != props.data) {
       setDisplayIcon("fa-floppy-disk");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayData]);
 
   React.useEffect(() => {
     if (props.data != displayData) {
       setDisplayData(props.data);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.data]);
 
   // Render the input
