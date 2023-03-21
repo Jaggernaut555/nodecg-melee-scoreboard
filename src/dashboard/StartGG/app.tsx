@@ -1,5 +1,8 @@
 import React from "react";
 import { useReplicant } from "use-nodecg";
+import { StreamQueueOption } from "../../types";
+import { MessageType } from "../../types/messages";
+import "../util/global.css";
 
 function App() {
   const [startGGToken, setStartGGToken] = useReplicant<string>(
@@ -11,9 +14,34 @@ function App() {
   const [startGGUrl, setStartGGUrl] = useReplicant<string>("startGGUrl", "");
   const [displayedStartGGUrl, setDisplayedStartGGUrl] = React.useState("");
 
+  const [StreamQueueOptions] = useReplicant<StreamQueueOption[]>(
+    "StreamQueueOptions",
+    []
+  );
+  const [StreamQueueSelectedOption, setStreamQueueSelectedOption] =
+    useReplicant<StreamQueueOption>("StreamQueueSelectedOption", {
+      name: "none",
+      id: "none",
+    });
+
   const saveChanges = () => {
     setStartGGToken(displayedStartGGToken);
     setStartGGUrl(displayedStartGGUrl);
+  };
+
+  const getStreamQueue = () => {
+    nodecg.sendMessage(MessageType.UseNextStreamQueue);
+  };
+
+  const updateStreamQueue = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setStreamQueueSelectedOption({
+      id: e.target.value,
+      name: e.target.options[e.target.selectedIndex].text,
+    });
+  };
+
+  const refreshStreamQueues = () => {
+    nodecg.sendMessage(MessageType.RefreshStreamQueues);
   };
 
   React.useEffect(() => {
@@ -46,6 +74,30 @@ function App() {
         <label>Automatically search StartGG</label>
         <input type="checkbox"></input>
       </div> */}
+      <div>
+        <label>Stream Queue:</label>
+        <select
+          onChange={updateStreamQueue}
+          value={StreamQueueSelectedOption.id}
+        >
+          <option key="none" value="none">
+            None
+          </option>
+          {StreamQueueOptions.map((sq) => {
+            return (
+              <option key={sq.id} value={sq.id}>
+                {sq.name}
+              </option>
+            );
+          })}
+        </select>
+        <button onClick={refreshStreamQueues}>
+          <span className="fa fa-refresh"></span>
+        </button>
+      </div>
+      <div hidden={StreamQueueSelectedOption.id == "none"}>
+        <button onClick={getStreamQueue}>Get Next Stream Queue Game</button>
+      </div>
       <button onClick={saveChanges}>Save</button>
     </div>
   );

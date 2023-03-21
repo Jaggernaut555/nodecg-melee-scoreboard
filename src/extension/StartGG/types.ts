@@ -8,7 +8,7 @@ declare type SlippiAccount = {
   value: string;
 };
 
-export declare type ConnectCodeIDs = {
+export declare type ConnectCodeID = {
   code: string;
   id: string;
   displayName: string;

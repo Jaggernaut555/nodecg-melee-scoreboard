@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useReplicant } from "use-nodecg";
-import { TwitchPredictionStatus } from "../../types/index.d";
+import { TwitchPredictionStatus } from "../../types";
 
 function App() {
   const [predictionStatus] = useReplicant<TwitchPredictionStatus>(

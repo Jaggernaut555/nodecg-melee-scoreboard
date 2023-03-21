@@ -3,7 +3,7 @@
 export class PlayerInfo {
   name = "";
   code = "";
-  character = "Fox";
+  character = "Unknown";
   color = "default";
   port = 0;
 }
@@ -36,3 +36,8 @@ export type TwitchPredictionStatus =
   | "Locked"
   | "Stopped"
   | "External";
+
+export interface StreamQueueOption {
+  id: string;
+  name: string;
+}

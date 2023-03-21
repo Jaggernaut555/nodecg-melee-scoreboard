@@ -1,4 +1,4 @@
-import { MatchInfo, TwitchPredictionStatus } from "../../types/index.d";
+import { MatchInfo, TwitchPredictionStatus } from "../../types";
 import { getPlayerIdentifier } from "../../util";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 

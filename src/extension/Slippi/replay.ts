@@ -6,16 +6,12 @@ import {
 } from "@slippi/slippi-js";
 import _ from "lodash";
 import chokidar from "chokidar";
-import {
-  ConnectionStatus,
-  MatchInfo,
-  PlayerInfo,
-  TeamInfo,
-} from "../../types/index.d";
+import { ConnectionStatus, MatchInfo, PlayerInfo, TeamInfo } from "../../types";
 import * as path from "path";
 import context from "../context";
 import * as StartGG from "../StartGG/TournamentInfo";
-import { formatStartGGRound } from "../StartGG/util";
+import { updateSubtitleFromStartGG } from "../StartGG/util";
+import { Replicants } from "../../types/replicants";
 
 let currentGame: SlippiGame;
 let currentGameWatcher: chokidar.FSWatcher;
@@ -25,10 +21,11 @@ let replayWatcher: chokidar.FSWatcher | null;
 const testingMode = false;
 
 export async function initReplay() {
-  const slippiFolder =
-    context.nodecg.Replicant<string>("slippiReplayFolder").value;
+  const slippiFolder = context.nodecg.Replicant<string>(
+    Replicants.SlippiReplayFolder
+  ).value;
   const connectionStatus = context.nodecg.Replicant<ConnectionStatus>(
-    "slippiConnectionStatus"
+    Replicants.SlippiConnectionStatus
   );
 
   context.nodecg.log.info("Setting up replay watcher");
@@ -62,7 +59,7 @@ export async function deactivateReplay() {
   }
   replayWatcher = null;
   const connectionStatus = context.nodecg.Replicant<ConnectionStatus>(
-    "slippiConnectionStatus"
+    Replicants.SlippiConnectionStatus
   );
   connectionStatus.value = "disconnected";
 }
@@ -236,7 +233,7 @@ async function setNames(gameSettings: GameStartType) {
         const setInfo = await StartGG.findCommonSetInfo(playerIDs);
 
         if (setInfo) {
-          updateSubtitle(formatStartGGRound(setInfo));
+          updateSubtitleFromStartGG(setInfo);
         }
 
         const games = await StartGG.findWonGamesOfSet(playerIDs);
@@ -442,15 +439,10 @@ function findWinningPort(game: SlippiGame): number {
 // team will have players and score
 
 function updateMatchInfo(matchInfo: MatchInfo): void {
-  const mi = context.nodecg.Replicant<MatchInfo>("matchInfo");
+  const mi = context.nodecg.Replicant<MatchInfo>(Replicants.MatchInfo);
   mi.value = matchInfo;
 }
 
 function getMatchInfo() {
-  return context.nodecg.readReplicant<MatchInfo>("matchInfo");
-}
-
-function updateSubtitle(subtitle: string) {
-  const subtitleInfo = context.nodecg.Replicant<string>("TournamentSubtitle");
-  subtitleInfo.value = subtitle;
+  return context.nodecg.readReplicant<MatchInfo>(Replicants.MatchInfo);
 }

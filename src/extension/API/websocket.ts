@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { MatchInfo, TwitchPredictionStatus } from "../../types/index.d";
+import { MatchInfo, TwitchPredictionStatus } from "../../types";
 import context from "../context";
 import {
   swapPlayers,

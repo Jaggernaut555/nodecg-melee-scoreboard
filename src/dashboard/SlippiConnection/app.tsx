@@ -1,6 +1,6 @@
 import React from "react";
 import { useReplicant } from "use-nodecg";
-import { ConnectionStatus, SlippiMethod } from "../../types/index.d";
+import { ConnectionStatus, SlippiMethod } from "../../types";
 // This is needed for some reason to get nodecg
 import NodeCG from "nodecg-types/types/browser"; // eslint-disable-line
 

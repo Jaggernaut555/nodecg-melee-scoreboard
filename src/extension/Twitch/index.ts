@@ -1,5 +1,5 @@
 import { AccessToken } from "@twurple/auth/";
-import { TwitchPredictionStatus } from "../../types/index.d";
+import { TwitchPredictionStatus } from "../../types";
 
 import context from "../context";
 import { initTwitchExpress } from "./express";

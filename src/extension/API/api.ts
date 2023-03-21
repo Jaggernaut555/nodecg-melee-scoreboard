@@ -1,4 +1,4 @@
-import { MatchInfo, TwitchPredictionStatus } from "../../types/index.d";
+import { MatchInfo, TwitchPredictionStatus } from "../../types";
 import { swapTeamInfo } from "../../util";
 import context from "../context";
 import { initWebsocket } from "./websocket";

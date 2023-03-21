@@ -1,16 +1,17 @@
 import startGGContext from "./startGGContext";
 import { graphql } from "./gql";
-import { ConnectedAccounts, ConnectCodeIDs, SetInfo } from "./types";
+import { ConnectedAccounts, ConnectCodeID, SetInfo } from "./types";
 import context from "../context";
 import {
   ActivityState,
   EventEntrantsQuery,
   EventSetsQuery,
-  FindSetIdQuery,
+  FindSetIdFromEntrantsQuery,
   FindSetInfoQuery,
   TournamentQueryQuery,
 } from "./gql/graphql";
 import _ from "lodash";
+import { CONNECT_CODE_REGEX, getTournamentInfoFromUrl } from "./util";
 
 const findEntrantsInEventQuery = graphql(`
   query EventEntrants($eventId: ID!, $page: Int!, $perPage: Int!) {
@@ -36,8 +37,8 @@ const findEntrantsInEventQuery = graphql(`
   }
 `);
 
-const findSetIdQuery = graphql(`
-  query FindSetId($eventId: ID!, $entrantIds: [ID]!) {
+const findSetIdFromEntrantsQuery = graphql(`
+  query findSetIdFromEntrants($eventId: ID!, $entrantIds: [ID]!) {
     event(id: $eventId) {
       id
       name
@@ -124,41 +125,9 @@ const findEventIdQuery = graphql(/* GraphQL */ `
   }
 `);
 
-function parseTournamentInfo(url: string) {
-  // format
-  // https://start.gg/tournament/{take this}/event/{event Slug}/brackets/{PhaseId}/{PhaseGroupId}
-  // Phase Group ID is for different waves in a single phase
-
-  if (!url) {
-    // Don't log here as we don't care about StartGG if there's no URL set
-    return null;
-  }
-
-  // Required tournament and event slug
-  // phase and phaseGroup IDs are optional
-  const regex =
-    /start\.gg\/tournament\/([a-zA-Z0-9-]+)\/event\/([a-zA-Z0-9-]+)(?:\/brackets\/)?([0-9]+)?(?:\/)?([0-9]+)?/;
-
-  const groups = regex.exec(url);
-
-  if (!groups) {
-    context.nodecg.log.error("Groups not found");
-    return null;
-  }
-
-  return {
-    tournamentSlug: groups[1],
-    eventSlug: groups[2],
-    phaseId: groups[3] ? Number(groups[3]) : null,
-    phaseGroup: groups[4] ? Number(groups[4]) : null,
-  };
-}
-
 /// if we cannot find the event/tournament then return a -1. Otherwise return the event ID
 async function findEventId(): Promise<string | null> {
-  const url = context.nodecg.readReplicant<string>("startGGUrl");
-
-  const tournamentInfo = parseTournamentInfo(url);
+  const tournamentInfo = getTournamentInfoFromUrl();
 
   if (!tournamentInfo || !startGGContext.client) {
     return null;
@@ -191,7 +160,7 @@ async function findEventId(): Promise<string | null> {
 
 export async function findEntrantIDs(
   codes: string[]
-): Promise<ConnectCodeIDs[]> {
+): Promise<ConnectCodeID[]> {
   // Find an entrant's ID based on their connect code
   // This is gonna require getting the data for all entrants
   // since I don't think we can filter on connectedAccounts
@@ -200,7 +169,7 @@ export async function findEntrantIDs(
   let page = 1;
   const perPage = 25;
   let keepGoing = true;
-  const results: ConnectCodeIDs[] = [];
+  const results: ConnectCodeID[] = [];
 
   if (!eventId) {
     return [];
@@ -230,9 +199,6 @@ export async function findEntrantIDs(
       return [];
     }
 
-    // try to find it
-    const regex = /([a-zA-Z]+|\d+).*?([0-9]{1,3})/;
-
     for (const entrant of res.event.entrants.nodes) {
       if (
         !entrant ||
@@ -254,7 +220,7 @@ export async function findEntrantIDs(
       ) {
         continue;
       }
-      const groups = regex.exec(connectedAccounts.slippi.value);
+      const groups = CONNECT_CODE_REGEX.exec(connectedAccounts.slippi.value);
 
       if (!groups) {
         continue;
@@ -289,7 +255,7 @@ export async function findEntrantIDs(
 
 // Finds the info of the first found active set between two entrants
 export async function findCommonSetInfo(
-  connectCodeIDs: ConnectCodeIDs[]
+  connectCodeIDs: ConnectCodeID[]
 ): Promise<SetInfo | null> {
   const eventId = await findEventId();
   if (!eventId) {
@@ -298,24 +264,21 @@ export async function findCommonSetInfo(
 
   const entrantIds = connectCodeIDs.map((cc) => cc.id);
 
-  let setIdRes: FindSetIdQuery;
+  let setIdRes: FindSetIdFromEntrantsQuery;
 
   try {
-    const sir = await startGGContext.client.request(findSetIdQuery, {
-      eventId,
-      entrantIds,
-    });
+    const sir = await startGGContext.client.request(
+      findSetIdFromEntrantsQuery,
+      {
+        eventId,
+        entrantIds,
+      }
+    );
     setIdRes = sir;
   } catch (e) {
     context.nodecg.log.error(e);
     return null;
   }
-
-  const retVal: SetInfo = {
-    id: "",
-    roundInfo: "",
-    bestOf: -1,
-  };
 
   if (
     setIdRes.event &&
@@ -327,39 +290,7 @@ export async function findCommonSetInfo(
     const activeSet = setIdRes.event.sets.nodes.find((s) => s?.state == 2);
 
     if (activeSet && activeSet.id) {
-      // We have the set id
-      // Now we need to try to find the round info
-      let setInfoRes: FindSetInfoQuery;
-      try {
-        const sir = await startGGContext.client.request(findSetInfoQuery, {
-          setId: activeSet.id,
-        });
-        setInfoRes = sir;
-      } catch (e) {
-        context.nodecg.log.error(e);
-        return null;
-      }
-
-      if (setInfoRes && setInfoRes.set && setInfoRes.set.fullRoundText) {
-        retVal.id = activeSet.id;
-        retVal.roundInfo = setInfoRes.set.fullRoundText;
-
-        if (
-          setInfoRes.set.round &&
-          setInfoRes.set.phaseGroup &&
-          setInfoRes.set.phaseGroup.rounds &&
-          setInfoRes.set.phaseGroup.rounds.some(
-            (r) => r?.number == setInfoRes.set?.round
-          )
-        ) {
-          retVal.bestOf =
-            setInfoRes.set.phaseGroup.rounds.find(
-              (r) => r?.number == setInfoRes.set?.round
-            )?.bestOf ?? -1;
-        }
-
-        return retVal;
-      }
+      return findSetInfo(activeSet.id);
     }
   }
 
@@ -369,7 +300,7 @@ export async function findCommonSetInfo(
 // TODO: this should accept a set id and return the won game IDs
 // The other stuff should be done elsewhere and call this
 export async function findWonGamesOfSet(
-  connectCodeIDs: ConnectCodeIDs[]
+  connectCodeIDs: ConnectCodeID[]
 ): Promise<string[]> {
   const eventId = await findEventId();
   if (!eventId) {
@@ -414,4 +345,45 @@ export async function findWonGamesOfSet(
   }
 
   return [];
+}
+
+export async function findSetInfo(setId: string): Promise<SetInfo | null> {
+  let setInfoRes: FindSetInfoQuery;
+  try {
+    const sir = await startGGContext.client.request(findSetInfoQuery, {
+      setId: setId,
+    });
+    setInfoRes = sir;
+  } catch (e) {
+    context.nodecg.log.error(e);
+    return null;
+  }
+
+  if (setInfoRes && setInfoRes.set && setInfoRes.set.fullRoundText) {
+    const retVal: SetInfo = {
+      id: "",
+      roundInfo: "",
+      bestOf: -1,
+    };
+    retVal.id = setId;
+    retVal.roundInfo = setInfoRes.set.fullRoundText;
+
+    if (
+      setInfoRes.set.round &&
+      setInfoRes.set.phaseGroup &&
+      setInfoRes.set.phaseGroup.rounds &&
+      setInfoRes.set.phaseGroup.rounds.some(
+        (r) => r?.number == setInfoRes.set?.round
+      )
+    ) {
+      retVal.bestOf =
+        setInfoRes.set.phaseGroup.rounds.find(
+          (r) => r?.number == setInfoRes.set?.round
+        )?.bestOf ?? -1;
+    }
+
+    return retVal;
+  }
+
+  return null;
 }

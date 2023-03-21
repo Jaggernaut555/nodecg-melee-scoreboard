@@ -1,4 +1,4 @@
-import { MatchInfo, PlayerInfo, TeamInfo } from "../types/index.d";
+import { MatchInfo, PlayerInfo, TeamInfo } from "../types";
 
 export function swapTeamInfo(info: MatchInfo): MatchInfo {
   const temp = copyMatchInfo(info);

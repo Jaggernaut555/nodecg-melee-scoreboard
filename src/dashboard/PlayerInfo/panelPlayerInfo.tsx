@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { PlayerInfo } from "../../types/index.d";
+import { PlayerInfo } from "../../types";
 
 const characterOptions = [
   "Bowser",
@@ -28,6 +28,7 @@ const characterOptions = [
   "YLink",
   "Yoshi",
   "Zelda",
+  "Unknown",
 ];
 
 interface PanelPlayerInfoProps {

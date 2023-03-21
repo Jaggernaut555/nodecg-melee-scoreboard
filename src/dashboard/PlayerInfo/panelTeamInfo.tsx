@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Bracket, PlayerInfo, TeamInfo } from "../../types/index.d";
+import { Bracket, PlayerInfo, TeamInfo } from "../../types";
 import PanelPlayerInfo from "./panelPlayerInfo";
 
 interface PanelTeamInfoProps {

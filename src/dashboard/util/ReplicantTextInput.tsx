@@ -1,5 +1,6 @@
 import React from "react";
-import "../util/input.css";
+import "./input.css";
+import "./global.css";
 
 interface ReplicantInputProps {
   autosave: boolean;

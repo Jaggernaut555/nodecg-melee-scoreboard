@@ -3,4 +3,7 @@ export enum MessageType {
   PredictionLocked = "PredictionLocked",
   PredictionEnded = "PredictionEnded",
   PredictionCancelled = "PredictionCancelled",
+
+  UseNextStreamQueue = "UseNextStreamQueue",
+  RefreshStreamQueues = "RefreshStreamQueues",
 }

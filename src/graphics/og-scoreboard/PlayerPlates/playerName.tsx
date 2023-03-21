@@ -25,12 +25,18 @@ function PlayerName(props: playerNameProps) {
   React.useLayoutEffect(() => {
     const isChanged = () => {
       return (
-        props.character != displayedCharacter || props.name != displayedName
+        props.character != displayedCharacter ||
+        (!!props.name && props.name != displayedName) ||
+        (!props.name && !!props.teamName && props.teamName != displayedName)
       );
     };
 
     const updateInfo = () => {
-      setDisplayedName(props.name);
+      if (!!props.teamName && !props.name) {
+        setDisplayedName(props.teamName);
+      } else {
+        setDisplayedName(props.name);
+      }
       setDisplayedCharacter(props.character);
       setDisplayedColor(props.color);
     };
@@ -103,6 +109,7 @@ function PlayerName(props: playerNameProps) {
     }
   }, [
     props.name,
+    props.teamName,
     props.character,
     isHidden,
     props.keepHidden,
@@ -137,7 +144,8 @@ function PlayerName(props: playerNameProps) {
           index={props.index}
           keepHidden={
             props.keepHidden ||
-            props.teamName.toLowerCase() == props.name.toLowerCase()
+            props.teamName.toLowerCase() == props.name.toLowerCase() ||
+            (!!props.teamName && !props.name)
           }
         />
       </div>

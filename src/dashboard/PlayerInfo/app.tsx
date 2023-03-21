@@ -1,6 +1,6 @@
 import React from "react";
 import { useReplicant } from "use-nodecg";
-import { MatchInfo, TeamInfo } from "../../types/index.d";
+import { MatchInfo, TeamInfo } from "../../types";
 import { copyMatchInfo, copyTeamInfo } from "../../util";
 import PanelTeamInfo from "./panelTeamInfo";
 

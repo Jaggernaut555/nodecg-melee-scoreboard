@@ -1,7 +1,7 @@
 import type { NodeCG } from "nodecg-types/types/server";
 import { initSlippi } from "./Slippi/slippi";
 import { initAPI } from "./API/api";
-import { MatchInfo } from "../types/index.d";
+import { MatchInfo } from "../types";
 import { version, name } from "../../package.json";
 import { initTwitch } from "./Twitch";
 import { initStartGG } from "./StartGG";

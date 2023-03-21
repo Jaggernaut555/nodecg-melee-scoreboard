@@ -3,7 +3,7 @@ import { useReplicant } from "use-nodecg";
 import "./og-scoreboard.css";
 import PlayerName from "./PlayerPlates/playerName";
 import PlayerScore from "./PlayerPlates/playerScore";
-import { MatchInfo, PlayerInfo, TeamInfo } from "../../types/index.d";
+import { MatchInfo, PlayerInfo, TeamInfo } from "../../types";
 import PlayerBracket from "./PlayerPlates/playerBracket";
 import TitlePlate from "./titlePlate";
 

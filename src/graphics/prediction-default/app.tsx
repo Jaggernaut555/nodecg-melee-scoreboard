@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useReplicant, useListenFor } from "use-nodecg";
 import "./prediction-default.css";
-import { MatchInfo, TeamInfo } from "../../types/index.d";
+import { MatchInfo, TeamInfo } from "../../types";
 import { MessageType } from "../../types/messages";
 import PredictionBox from "./prediction-box";
 import NodeCG from "nodecg-types/types/browser"; // eslint-disable-line
