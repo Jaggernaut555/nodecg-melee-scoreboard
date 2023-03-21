@@ -9,9 +9,7 @@ import { findSetInfo, findWonGamesOfSet } from "./TournamentInfo";
 import { ConnectCodeID } from "./types";
 import {
   CONNECT_CODE_REGEX,
-  formatStartGGRound,
   getTournamentInfoFromUrl,
-  parseTournamentInfo,
   setTeamsFromCCIDs,
   updateSubtitleFromStartGG,
 } from "./util";
@@ -46,6 +44,13 @@ const findStreamQueueSets = graphql(`
           id
           slots {
             id
+            standing {
+              stats {
+                score {
+                  value
+                }
+              }
+            }
             entrant {
               id
               name
@@ -63,7 +68,7 @@ const findStreamQueueSets = graphql(`
 
 export function initStreamQueue() {
   context.nodecg.listenFor(MessageType.UseNextStreamQueue, () => {
-    getNextStreamQueueMatch();
+    useNextStreamQueueSet();
   });
 
   updateStreamQueueOptions();
@@ -115,17 +120,17 @@ async function updateStreamQueueOptions() {
   }
 }
 
-async function getNextStreamQueueMatch(): Promise<ConnectCodeID[]> {
+async function useNextStreamQueueSet() {
   const SQSelectedOption = context.nodecg.Replicant<StreamQueueOption>(
     Replicants.StreamQueueSelectedOption,
     { defaultValue: { name: "none", id: "none" } }
   );
 
   const tournamentInfo = getTournamentInfoFromUrl();
-  const results: ConnectCodeID[] = [];
+  const results: [ConnectCodeID, number][] = [];
 
   if (!tournamentInfo || !startGGContext.client) {
-    return results;
+    return;
   }
 
   let streamSets: StreamQueueSetsQuery;
@@ -137,7 +142,7 @@ async function getNextStreamQueueMatch(): Promise<ConnectCodeID[]> {
     streamSets = sqs;
   } catch (e) {
     context.nodecg.log.error(e);
-    return results;
+    return;
   }
 
   if (
@@ -187,11 +192,14 @@ async function getNextStreamQueueMatch(): Promise<ConnectCodeID[]> {
             displayName = `${e.entrant.participants[0].prefix} ${displayName}`;
           }
 
-          results.push({
-            displayName: displayName,
-            id: e.entrant.id,
-            code: entrantCode,
-          });
+          results.push([
+            {
+              displayName: displayName,
+              id: e.entrant.id,
+              code: entrantCode,
+            },
+            e.standing?.stats?.score?.value ?? 0,
+          ]);
         }
       });
 
@@ -203,24 +211,22 @@ async function getNextStreamQueueMatch(): Promise<ConnectCodeID[]> {
         }
       }
 
-      setTeamsFromCCIDs(results);
+      setTeamsFromCCIDs(results.map((c) => c[0]));
 
-      const games = await findWonGamesOfSet(results);
-      if (games.length) {
+      // TODO: apparently you can get set.slot[0].standing.stats.score.value to get how many games have been won
+
+      if (results.length == 2) {
         const matchInfo = context.nodecg.Replicant<MatchInfo>(
           Replicants.MatchInfo
         );
 
         matchInfo.value.teams.forEach((t) => {
           const code = t.players[0].code;
-          const pid = results.find((p) => p.code == code);
+          const pid = results.find((p) => p[0].code == code);
 
           if (pid) {
-            t.name = pid.displayName;
+            t.score += pid[1];
           }
-
-          const gamesWon = games.filter((g) => g == code).length;
-          t.score += gamesWon;
         });
       }
     }
@@ -228,6 +234,4 @@ async function getNextStreamQueueMatch(): Promise<ConnectCodeID[]> {
     // Do something here?
     context.nodecg.log.error("Can't get data from stream queue");
   }
-
-  return results;
 }

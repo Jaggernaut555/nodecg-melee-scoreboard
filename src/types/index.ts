@@ -41,3 +41,12 @@ export interface StreamQueueOption {
   id: string;
   name: string;
 }
+
+export interface SetPreviewInfo {
+  id: string;
+  round: string;
+  players: {
+    name: string;
+    score: number;
+  }[];
+}

@@ -85,6 +85,24 @@
         "fullbleed": false,
         "headerColor": "#525F78",
         "width": 3
+      },
+      {
+        "name": "StartGGMatchDialog",
+        "title": "StartGG Match Selector",
+        "file":"StartGGMatchDialog.html",
+        "headerColor": "#525F78",
+        "width": 5,
+        "dialog": true,
+        "dialogButtons": [
+          {
+            "name": "Select",
+            "type": "confirm"
+          },
+          {
+            "name": "Cancel",
+            "type": "dismiss"
+          }
+        ]
       }
     ],
     "graphics": [

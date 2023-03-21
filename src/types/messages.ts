@@ -6,4 +6,7 @@ export enum MessageType {
 
   UseNextStreamQueue = "UseNextStreamQueue",
   RefreshStreamQueues = "RefreshStreamQueues",
+
+  FindStartGGMatches = "FindStartGGMatches",
+  SelectStartGGMatch = "SelectStartGGMatch",
 }

@@ -4,10 +4,12 @@ import { Replicants } from "../../types/replicants";
 import context from "../context";
 import startGGContext from "./startGGContext";
 import { initStreamQueue } from "./streamqueue";
+import { getAllActiveSets, useSetInfo } from "./TournamentInfo";
 
 export function initStartGG() {
   context.nodecg.log.info("Setting up StartGG connection");
   initReplicants();
+  initMessageListeners();
   initStreamQueue();
 }
 
@@ -31,5 +33,18 @@ function initReplicants() {
     if (newValue) {
       context.nodecg.sendMessage(MessageType.RefreshStreamQueues);
     }
+  });
+}
+
+function initMessageListeners() {
+  context.nodecg.listenFor(MessageType.FindStartGGMatches, async (val, ack) => {
+    if (ack && !ack.handled) {
+      const sets = await getAllActiveSets();
+      ack(null, sets);
+    }
+  });
+
+  context.nodecg.listenFor(MessageType.SelectStartGGMatch, (val) => {
+    useSetInfo(val);
   });
 }

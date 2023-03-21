@@ -4,14 +4,22 @@ import { ConnectedAccounts, ConnectCodeID, SetInfo } from "./types";
 import context from "../context";
 import {
   ActivityState,
+  EventActiveSetsQuery,
   EventEntrantsQuery,
-  EventSetsQuery,
+  EventSetsForEntrantsQuery,
   FindSetIdFromEntrantsQuery,
   FindSetInfoQuery,
   TournamentQueryQuery,
 } from "./gql/graphql";
 import _ from "lodash";
-import { CONNECT_CODE_REGEX, getTournamentInfoFromUrl } from "./util";
+import {
+  CONNECT_CODE_REGEX,
+  getTournamentInfoFromUrl,
+  setTeamsFromCCIDs,
+  updateSubtitleFromStartGG,
+} from "./util";
+import { MatchInfo, SetPreviewInfo } from "../../types";
+import { Replicants } from "../../types/replicants";
 
 const findEntrantsInEventQuery = graphql(`
   query EventEntrants($eventId: ID!, $page: Int!, $perPage: Int!) {
@@ -67,9 +75,20 @@ const findSetInfoQuery = graphql(`
       }
       slots {
         id
+        standing {
+          stats {
+            score {
+              value
+            }
+          }
+        }
         entrant {
           id
           name
+          participants {
+            connectedAccounts
+            prefix
+          }
         }
       }
     }
@@ -77,8 +96,8 @@ const findSetInfoQuery = graphql(`
 `);
 
 // Not sure what states are what other than 3 is COMPLETED
-const findSetsInEventQuery = graphql(`
-  query EventSets($eventId: ID!, $entrantIds: [ID]!) {
+const eventSetsForEntrantsQuery = graphql(`
+  query EventSetsForEntrants($eventId: ID!, $entrantIds: [ID]!) {
     event(id: $eventId) {
       id
       name
@@ -90,12 +109,18 @@ const findSetsInEventQuery = graphql(`
           id
           state
           fullRoundText
-          totalGames
           games {
             winnerId
           }
           slots {
             id
+            standing {
+              stats {
+                score {
+                  value
+                }
+              }
+            }
             entrant {
               id
               name
@@ -103,6 +128,40 @@ const findSetsInEventQuery = graphql(`
                 connectedAccounts
                 prefix
               }
+            }
+          }
+        }
+      }
+    }
+  }
+`);
+
+// Find all active sets for displaying in choice dialog
+const eventActiveSetsQuery = graphql(`
+  query EventActiveSets($eventId: ID!) {
+    event(id: $eventId) {
+      id
+      name
+      sets(
+        sortType: STANDARD
+        filters: { hideEmpty: true, state: [1, 2, 3, 4] }
+      ) {
+        nodes {
+          id
+          state
+          fullRoundText
+          slots {
+            id
+            standing {
+              stats {
+                score {
+                  value
+                }
+              }
+            }
+            entrant {
+              id
+              name
             }
           }
         }
@@ -309,9 +368,9 @@ export async function findWonGamesOfSet(
 
   const entrantIds = connectCodeIDs.map((cc) => cc.id);
 
-  let res: EventSetsQuery;
+  let res: EventSetsForEntrantsQuery;
   try {
-    const r = await startGGContext.client.request(findSetsInEventQuery, {
+    const r = await startGGContext.client.request(eventSetsForEntrantsQuery, {
       eventId,
       entrantIds,
     });
@@ -330,6 +389,7 @@ export async function findWonGamesOfSet(
     // check for a currently active set between them
     const activeSets = res.event.sets.nodes.find((s) => s?.state == 2);
 
+    // TODO: Use the alternative way from set.slots[i].standing.stats.score.value
     if (activeSets && activeSets.games && activeSets.games.length > 0) {
       const games = activeSets.games.filter((g) => g?.winnerId);
       // All of these games have winners
@@ -386,4 +446,163 @@ export async function findSetInfo(setId: string): Promise<SetInfo | null> {
   }
 
   return null;
+}
+
+export async function getAllActiveSets() {
+  const eventId = await findEventId();
+  if (!eventId) {
+    return [];
+  }
+
+  let res: EventActiveSetsQuery;
+  try {
+    const r = await startGGContext.client.request(eventActiveSetsQuery, {
+      eventId: eventId,
+    });
+    res = r;
+  } catch (e) {
+    context.nodecg.log.error(e);
+    return [];
+  }
+
+  if (
+    res &&
+    res.event &&
+    res.event.sets &&
+    res.event.sets.nodes &&
+    res.event.sets.nodes.length
+  ) {
+    const sets = res.event.sets.nodes
+      .map((n) => {
+        if (n && n.id && n.fullRoundText && n.slots && n.slots.length == 2) {
+          const players = n.slots.map((s) => {
+            // For some reason sometimes the score is -1 for a match that hasn't yet started
+            const score = s?.standing?.stats?.score?.value ?? 0;
+            return {
+              name: s?.entrant?.name ?? "",
+              score: score < 0 ? 0 : score,
+            };
+          });
+
+          if (players.some((p) => !p.name)) {
+            return null;
+          }
+
+          const val: SetPreviewInfo = {
+            id: n.id,
+            round: n.fullRoundText,
+            players,
+          };
+          return val;
+        }
+        return null;
+      })
+      .filter((n): n is SetPreviewInfo => n != null);
+
+    return sets;
+  }
+  return [];
+}
+
+/**
+ * Assigns the set found at the set ID to the match info
+ *
+ * @param setId Set ID to use
+ * @returns
+ */
+export async function useSetInfo(setId: string): Promise<void> {
+  let setInfoRes: FindSetInfoQuery;
+  try {
+    const sir = await startGGContext.client.request(findSetInfoQuery, {
+      setId: setId,
+    });
+    setInfoRes = sir;
+  } catch (e) {
+    context.nodecg.log.error(e);
+    return;
+  }
+
+  if (setInfoRes && setInfoRes.set && setInfoRes.set.fullRoundText) {
+    const players: [ConnectCodeID, number][] = [];
+    const setInfo: SetInfo = {
+      id: "",
+      roundInfo: "",
+      bestOf: -1,
+    };
+    setInfo.id = setId;
+    setInfo.roundInfo = setInfoRes.set.fullRoundText;
+
+    if (
+      setInfoRes.set.round &&
+      setInfoRes.set.phaseGroup &&
+      setInfoRes.set.phaseGroup.rounds &&
+      setInfoRes.set.phaseGroup.rounds.some(
+        (r) => r?.number == setInfoRes.set?.round
+      )
+    ) {
+      setInfo.bestOf =
+        setInfoRes.set.phaseGroup.rounds.find(
+          (r) => r?.number == setInfoRes.set?.round
+        )?.bestOf ?? -1;
+    }
+
+    setInfoRes.set.slots?.forEach((e) => {
+      if (
+        e &&
+        e.entrant &&
+        e.entrant.id &&
+        e.entrant.name &&
+        e.entrant.participants &&
+        e.entrant.participants.length > 0 &&
+        e.entrant.participants[0]
+      ) {
+        const groups = CONNECT_CODE_REGEX.exec(
+          e.entrant.participants[0]?.connectedAccounts.slippi.value
+        );
+
+        let entrantCode = "";
+        // If there is an included connect code add it
+        if (groups) {
+          entrantCode = `${groups[1].toUpperCase()}#${groups[2]}`;
+        }
+
+        let displayName = e.entrant.name;
+        // if they have a prefix, add it
+        if (e.entrant.participants[0].prefix) {
+          displayName = `${e.entrant.participants[0].prefix} ${displayName}`;
+        }
+
+        const score = e.standing?.stats?.score?.value ?? 0;
+
+        players.push([
+          {
+            displayName: displayName,
+            id: e.entrant.id,
+            code: entrantCode,
+          },
+          score < 0 ? 0 : score,
+        ]);
+      }
+    });
+
+    // set set info
+    updateSubtitleFromStartGG(setInfo);
+
+    // set player info + scores
+    if (players.length == 2) {
+      setTeamsFromCCIDs(players.map((c) => c[0]));
+      const matchInfo = context.nodecg.Replicant<MatchInfo>(
+        Replicants.MatchInfo
+      );
+
+      matchInfo.value.teams.forEach((t) => {
+        const code = t.players[0].code;
+        const pid = players.find((p) => p[0].code == code);
+
+        if (pid) {
+          t.score += pid[1];
+        }
+      });
+    }
+  }
 }

@@ -1,0 +1,18 @@
+.box {
+  border: solid 1px;
+  margin: 5px;
+  flex: 1 0 20%;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.selected {
+  background-color: green;
+}
+
+.box:hover:not(.selected) {
+  background-color: grey;
+}

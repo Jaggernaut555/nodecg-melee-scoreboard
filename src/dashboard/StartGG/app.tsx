@@ -78,6 +78,10 @@ function App() {
 
       <div hidden={!startGGUrl || startGGUrl == ""}>
         <div>
+          <button nodecg-dialog="StartGGMatchDialog">Find Match Dialog</button>
+        </div>
+
+        <div>
           <label>Stream Queue:</label>
           <select
             onChange={updateStreamQueue}
@@ -99,7 +103,7 @@ function App() {
           </button>
         </div>
         <div hidden={StreamQueueSelectedOption.id == "none"}>
-          <button onClick={getStreamQueue}>Get Next Stream Queue Game</button>
+          <button onClick={getStreamQueue}>Get Next Stream Queue Set</button>
         </div>
       </div>
     </div>
