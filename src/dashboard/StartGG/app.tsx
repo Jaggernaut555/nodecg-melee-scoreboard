@@ -74,31 +74,34 @@ function App() {
         <label>Automatically search StartGG</label>
         <input type="checkbox"></input>
       </div> */}
-      <div>
-        <label>Stream Queue:</label>
-        <select
-          onChange={updateStreamQueue}
-          value={StreamQueueSelectedOption.id}
-        >
-          <option key="none" value="none">
-            None
-          </option>
-          {StreamQueueOptions.map((sq) => {
-            return (
-              <option key={sq.id} value={sq.id}>
-                {sq.name}
-              </option>
-            );
-          })}
-        </select>
-        <button onClick={refreshStreamQueues}>
-          <span className="fa fa-refresh"></span>
-        </button>
-      </div>
-      <div hidden={StreamQueueSelectedOption.id == "none"}>
-        <button onClick={getStreamQueue}>Get Next Stream Queue Game</button>
-      </div>
       <button onClick={saveChanges}>Save</button>
+
+      <div hidden={!startGGUrl || startGGUrl == ""}>
+        <div>
+          <label>Stream Queue:</label>
+          <select
+            onChange={updateStreamQueue}
+            value={StreamQueueSelectedOption.id}
+          >
+            <option key="none" value="none">
+              None
+            </option>
+            {StreamQueueOptions.map((sq) => {
+              return (
+                <option key={sq.id} value={sq.id}>
+                  {sq.name}
+                </option>
+              );
+            })}
+          </select>
+          <button onClick={refreshStreamQueues}>
+            <span className="fa fa-refresh"></span>
+          </button>
+        </div>
+        <div hidden={StreamQueueSelectedOption.id == "none"}>
+          <button onClick={getStreamQueue}>Get Next Stream Queue Game</button>
+        </div>
+      </div>
     </div>
   );
 }

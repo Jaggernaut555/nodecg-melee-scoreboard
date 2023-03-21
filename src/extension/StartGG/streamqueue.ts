@@ -81,6 +81,7 @@ async function updateStreamQueueOptions() {
   const tournamentInfo = getTournamentInfoFromUrl();
 
   if (!tournamentInfo || !startGGContext.client) {
+    SQOptions.value = [];
     return null;
   }
 
@@ -93,6 +94,7 @@ async function updateStreamQueueOptions() {
     streamQueueInfo = sqi;
   } catch (e) {
     context.nodecg.log.error(e);
+    SQOptions.value = [];
     return null;
   }
   if (
