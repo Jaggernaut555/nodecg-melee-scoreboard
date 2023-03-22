@@ -20,15 +20,7 @@ Console-relay
   - if ports change should scores reset
 
 StartGG match selector
-- The StartGG requests are 503-ing a decent amount on the auto-find
-  - this feature would essentially allow us to try again
-- pop up dialog that shows all matches that are ongoing or ready to start
-  - select the match happening of available matches
-  - populates player names and round info
-    - character info and wins can still be tracked via console-relay
-  - populate scores already reported if any
-    - with console-replay these probably won't be updated in real time
-- More useful with console-relay than replay directory
+- mostly done
 - have to be able to swap players if left/right are not correct
 
 # changes
