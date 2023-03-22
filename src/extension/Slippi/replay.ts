@@ -249,7 +249,7 @@ async function setNames(gameSettings: GameStartType) {
             }
 
             const gamesWon = games.filter((g) => g == code).length;
-            t.score += gamesWon;
+            t.score = gamesWon;
           });
         }
       }
