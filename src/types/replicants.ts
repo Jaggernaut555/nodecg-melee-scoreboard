@@ -8,6 +8,7 @@ export enum Replicants {
 
   StartGGUrl = "startGGUrl",
   StartGGAccessToken = "startGGAccessToken",
+  StartGGAutoTrack = "StartGGAutoTrack",
 
   StreamQueueOptions = "StreamQueueOptions",
   StreamQueueSelectedOption = "StreamQueueSelectedOption",

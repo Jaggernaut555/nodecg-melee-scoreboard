@@ -225,7 +225,7 @@ async function useNextStreamQueueSet() {
           const pid = results.find((p) => p[0].code == code);
 
           if (pid) {
-            t.score += pid[1];
+            t.score = pid[1];
           }
         });
       }

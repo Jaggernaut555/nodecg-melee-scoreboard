@@ -223,33 +223,35 @@ async function setNames(gameSettings: GameStartType) {
       context.nodecg.log.debug("new players");
       matchInfo.teams = teams;
 
-      // If new players then try checking StartGG for any previous matches
-      const playerIDs = await StartGG.findEntrantIDs(
-        teams.map((t) => t.players[0].code)
-      );
+      if (autoCheckStartGG()) {
+        // If new players then try checking StartGG for any previous matches
+        const playerIDs = await StartGG.findEntrantIDs(
+          teams.map((t) => t.players[0].code)
+        );
 
-      // Update info based on StartGG set data if both players are found
-      if (playerIDs.length == 2) {
-        const setInfo = await StartGG.findCommonSetInfo(playerIDs);
+        // Update info based on StartGG set data if both players are found
+        if (playerIDs.length == 2) {
+          const setInfo = await StartGG.findCommonSetInfo(playerIDs);
 
-        if (setInfo) {
-          updateSubtitleFromStartGG(setInfo);
-        }
-
-        const games = await StartGG.findWonGamesOfSet(playerIDs);
-
-        // Set the player's StartGG name and the score of their set
-        teams.forEach((t) => {
-          const code = t.players[0].code;
-          const pid = playerIDs.find((p) => p.code == code);
-
-          if (pid) {
-            t.name = pid.displayName;
+          if (setInfo) {
+            updateSubtitleFromStartGG(setInfo);
           }
 
-          const gamesWon = games.filter((g) => g == code).length;
-          t.score += gamesWon;
-        });
+          const games = await StartGG.findWonGamesOfSet(playerIDs);
+
+          // Set the player's StartGG name and the score of their set
+          teams.forEach((t) => {
+            const code = t.players[0].code;
+            const pid = playerIDs.find((p) => p.code == code);
+
+            if (pid) {
+              t.name = pid.displayName;
+            }
+
+            const gamesWon = games.filter((g) => g == code).length;
+            t.score += gamesWon;
+          });
+        }
       }
     }
 
@@ -445,4 +447,10 @@ function updateMatchInfo(matchInfo: MatchInfo): void {
 
 function getMatchInfo() {
   return context.nodecg.readReplicant<MatchInfo>(Replicants.MatchInfo);
+}
+
+function autoCheckStartGG() {
+  return context.nodecg.Replicant<boolean>(Replicants.StartGGAutoTrack, {
+    defaultValue: false,
+  }).value;
 }

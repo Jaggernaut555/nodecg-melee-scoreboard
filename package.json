@@ -95,12 +95,12 @@
         "dialog": true,
         "dialogButtons": [
           {
-            "name": "Select",
-            "type": "confirm"
-          },
-          {
             "name": "Cancel",
             "type": "dismiss"
+          },
+          {
+            "name": "Select",
+            "type": "confirm"
           }
         ]
       }

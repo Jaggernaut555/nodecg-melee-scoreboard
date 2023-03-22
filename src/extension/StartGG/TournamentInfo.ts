@@ -600,7 +600,7 @@ export async function useSetInfo(setId: string): Promise<void> {
         const pid = players.find((p) => p[0].code == code);
 
         if (pid) {
-          t.score += pid[1];
+          t.score = pid[1];
         }
       });
     }

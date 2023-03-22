@@ -2,24 +2,34 @@ import React from "react";
 import { useReplicant } from "use-nodecg";
 import { StreamQueueOption } from "../../types";
 import { MessageType } from "../../types/messages";
+import { Replicants } from "../../types/replicants";
 import "../util/global.css";
 
 function App() {
   const [startGGToken, setStartGGToken] = useReplicant<string>(
-    "startGGAccessToken",
+    Replicants.StartGGAccessToken,
     ""
   );
   const [displayedStartGGToken, setDisplayedStartGGToken] = React.useState("");
 
-  const [startGGUrl, setStartGGUrl] = useReplicant<string>("startGGUrl", "");
+  const [startGGUrl, setStartGGUrl] = useReplicant<string>(
+    Replicants.StartGGUrl,
+    ""
+  );
   const [displayedStartGGUrl, setDisplayedStartGGUrl] = React.useState("");
 
+  const [autoTrack, setAutoTrack] = useReplicant<boolean>(
+    Replicants.StartGGAutoTrack,
+    false
+  );
+  const [displayedAutoTrack, setDisplayedAutotrack] = React.useState(false);
+
   const [StreamQueueOptions] = useReplicant<StreamQueueOption[]>(
-    "StreamQueueOptions",
+    Replicants.StreamQueueOptions,
     []
   );
   const [StreamQueueSelectedOption, setStreamQueueSelectedOption] =
-    useReplicant<StreamQueueOption>("StreamQueueSelectedOption", {
+    useReplicant<StreamQueueOption>(Replicants.StreamQueueSelectedOption, {
       name: "none",
       id: "none",
     });
@@ -27,6 +37,7 @@ function App() {
   const saveChanges = () => {
     setStartGGToken(displayedStartGGToken);
     setStartGGUrl(displayedStartGGUrl);
+    setAutoTrack(displayedAutoTrack);
   };
 
   const getStreamQueue = () => {
@@ -48,9 +59,10 @@ function App() {
     if (displayedStartGGToken != startGGToken)
       setDisplayedStartGGToken(startGGToken);
     if (displayedStartGGUrl != startGGUrl) setDisplayedStartGGUrl(startGGUrl);
+    if (displayedAutoTrack != autoTrack) setDisplayedAutotrack(autoTrack);
     // We don't want to call this on updates to the displayed info
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startGGToken, startGGUrl]);
+  }, [startGGToken, startGGUrl, autoTrack]);
 
   return (
     <div>
@@ -70,13 +82,18 @@ function App() {
           onChange={(e) => setDisplayedStartGGUrl(e.target.value)}
         />
       </div>
-      {/* <div>
+      <div>
         <label>Automatically search StartGG</label>
-        <input type="checkbox"></input>
-      </div> */}
+        <input
+          type="checkbox"
+          checked={displayedAutoTrack}
+          onChange={(e) => setDisplayedAutotrack(e.target.checked)}
+        ></input>
+      </div>
       <button onClick={saveChanges}>Save</button>
 
       <div hidden={!startGGUrl || startGGUrl == ""}>
+        <div>Controls:</div>
         <div>
           <button nodecg-dialog="StartGGMatchDialog">Find Match Dialog</button>
         </div>
