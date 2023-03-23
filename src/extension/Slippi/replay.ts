@@ -436,15 +436,13 @@ function findWinningPort(game: SlippiGame): number {
 //     return [playerStocks, oppStocks];
 // }
 
-// TODO:
-// Should split players into teams
-// team will have players and score
-
 function updateMatchInfo(matchInfo: MatchInfo): void {
   const mi = context.nodecg.Replicant<MatchInfo>(Replicants.MatchInfo);
   mi.value = matchInfo;
 }
 
+// TODO: I think with the way nodecg works this is mutable
+// could replace it with getting a copy of the team instead
 function getMatchInfo() {
   return context.nodecg.readReplicant<MatchInfo>(Replicants.MatchInfo);
 }
