@@ -20,6 +20,7 @@ import {
 } from "./util";
 import { MatchInfo, SetPreviewInfo } from "../../types";
 import { Replicants } from "../../types/replicants";
+import { MessageType } from "../../types/messages";
 
 const findEntrantsInEventQuery = graphql(`
   query EventEntrants($eventId: ID!, $page: Int!, $perPage: Int!) {
@@ -138,14 +139,21 @@ const eventSetsForEntrantsQuery = graphql(`
 
 // Find all active sets for displaying in choice dialog
 const eventActiveSetsQuery = graphql(`
-  query EventActiveSets($eventId: ID!) {
+  query EventActiveSets($eventId: ID!, $page: Int!) {
     event(id: $eventId) {
       id
       name
       sets(
+        page: $page
+        perPage: 20
         sortType: STANDARD
-        filters: { hideEmpty: true, state: [1, 2, 3, 4] }
+        filters: { hideEmpty: true, state: [1, 2, 4] }
       ) {
+        pageInfo {
+          total
+          page
+          perPage
+        }
         nodes {
           id
           state
@@ -448,9 +456,10 @@ export async function findSetInfo(setId: string): Promise<SetInfo | null> {
   return null;
 }
 
-export async function getAllActiveSets() {
+export async function getAllActiveSets(page = 1) {
   const eventId = await findEventId();
   if (!eventId) {
+    context.nodecg.log.error("No event ID to search for active sets");
     return [];
   }
 
@@ -458,6 +467,7 @@ export async function getAllActiveSets() {
   try {
     const r = await startGGContext.client.request(eventActiveSetsQuery, {
       eventId: eventId,
+      page: page,
     });
     res = r;
   } catch (e) {
@@ -472,6 +482,15 @@ export async function getAllActiveSets() {
     res.event.sets.nodes &&
     res.event.sets.nodes.length
   ) {
+    if (
+      res.event.sets.pageInfo &&
+      res.event.sets.pageInfo.total &&
+      res.event.sets.pageInfo.total > 20
+    ) {
+      // Use navigation
+      context.nodecg.sendMessage(MessageType.UseSetPageNavigation);
+    }
+
     const sets = res.event.sets.nodes
       .map((n) => {
         if (n && n.id && n.fullRoundText && n.slots && n.slots.length == 2) {

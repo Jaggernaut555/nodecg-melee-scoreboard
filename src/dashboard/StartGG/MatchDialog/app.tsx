@@ -9,10 +9,12 @@ function App() {
   const [setPreviews, setSetPreviews] = React.useState<SetPreviewInfo[]>([]);
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [selectedSet, setSelectedSet] = React.useState("");
+  const [useNavigation, setUseNavigation] = React.useState(false);
+  const [currentPage, setCurrentPage] = React.useState(1);
 
-  const findMatchesDialog = () => {
+  const findMatchesDialog = (page: number) => {
     nodecg
-      .sendMessage(MessageType.FindStartGGMatches)
+      .sendMessage(MessageType.FindStartGGMatches, page)
       .then((result: SetPreviewInfo[]) => {
         setSetPreviews(result);
         setIsLoaded(true);
@@ -22,12 +24,20 @@ function App() {
       });
   };
 
+  const changePage = (change: number) => {
+    setCurrentPage(currentPage + change);
+  };
+
   React.useEffect(() => {
     const init = () => {
       setIsLoaded(false);
       setSetPreviews([]);
       setSelectedSet("");
-      findMatchesDialog();
+      if (currentPage != 1) {
+        setCurrentPage(1);
+      } else {
+        findMatchesDialog(currentPage);
+      }
     };
     document.addEventListener("dialog-opened", init);
 
@@ -41,12 +51,25 @@ function App() {
     //   // The user pressed the dismiss button.
     // });
 
+    const UsePageNavigation = () => {
+      setUseNavigation(true);
+      console.log("using navigation");
+    };
+
+    nodecg.listenFor(MessageType.UseSetPageNavigation, UsePageNavigation);
+
     return () => {
       document.removeEventListener("dialog-opened", init);
       document.removeEventListener("dialog-confirmed", confirm);
       // document.removeEventListener("dialog-dismissed");
+      nodecg.unlisten(MessageType.UseSetPageNavigation, UsePageNavigation);
     };
   });
+
+  React.useEffect(() => {
+    setIsLoaded(false);
+    findMatchesDialog(currentPage);
+  }, [currentPage]);
 
   if (!isLoaded) {
     return (
@@ -57,19 +80,28 @@ function App() {
   }
 
   return (
-    <div className="container">
-      {setPreviews.map((s) => {
-        return (
-          <SetPreviewComponent
-            key={s.id}
-            onClick={() => setSelectedSet(s.id)}
-            id={s.id}
-            round={s.round}
-            players={s.players}
-            selected={s.id == selectedSet}
-          />
-        );
-      })}
+    <div>
+      <div hidden={!useNavigation}>
+        <button onClick={() => changePage(-1)} disabled={currentPage == 1}>
+          Prev Page
+        </button>
+        <span> Page: {currentPage} </span>
+        <button onClick={() => changePage(1)}>Next Page</button>
+      </div>
+      <div className="container">
+        {setPreviews.map((s) => {
+          return (
+            <SetPreviewComponent
+              key={s.id}
+              onClick={() => setSelectedSet(s.id)}
+              id={s.id}
+              round={s.round}
+              players={s.players}
+              selected={s.id == selectedSet}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }

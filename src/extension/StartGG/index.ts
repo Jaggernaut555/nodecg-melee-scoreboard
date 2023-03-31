@@ -39,7 +39,7 @@ function initReplicants() {
 function initMessageListeners() {
   context.nodecg.listenFor(MessageType.FindStartGGMatches, async (val, ack) => {
     if (ack && !ack.handled) {
-      const sets = await getAllActiveSets();
+      const sets = await getAllActiveSets(val);
       ack(null, sets);
     }
   });

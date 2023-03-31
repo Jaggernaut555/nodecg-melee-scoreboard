@@ -9,4 +9,6 @@ export enum MessageType {
 
   FindStartGGMatches = "FindStartGGMatches",
   SelectStartGGMatch = "SelectStartGGMatch",
+
+  UseSetPageNavigation = "UseSetPageNavigation",
 }
