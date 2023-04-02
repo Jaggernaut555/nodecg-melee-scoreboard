@@ -5,11 +5,15 @@ import { MatchInfo, TeamInfo } from "../../types";
 import { MessageType } from "../../types/messages";
 import PredictionBox from "./prediction-box";
 import NodeCG from "nodecg-types/types/browser"; // eslint-disable-line
+import { ReplicantType } from "../../types/replicants";
 
 function App() {
   const { nodecg } = window || globalThis || {};
 
-  const [matchInfo] = useReplicant<MatchInfo>("matchInfo", new MatchInfo());
+  const [matchInfo] = useReplicant<MatchInfo>(
+    ReplicantType.MatchInfo,
+    new MatchInfo()
+  );
 
   const [team1Info, setTeam1Info] = React.useState<TeamInfo>(new TeamInfo());
   const [team2Info, setTeam2Info] = React.useState<TeamInfo>(new TeamInfo());

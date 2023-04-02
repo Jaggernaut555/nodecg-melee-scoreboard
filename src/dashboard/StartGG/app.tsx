@@ -2,34 +2,34 @@ import React from "react";
 import { useReplicant } from "use-nodecg";
 import { StreamQueueOption } from "../../types";
 import { MessageType } from "../../types/messages";
-import { Replicants } from "../../types/replicants";
+import { ReplicantType } from "../../types/replicants";
 import "../util/global.css";
 
 function App() {
   const [startGGToken, setStartGGToken] = useReplicant<string>(
-    Replicants.StartGGAccessToken,
+    ReplicantType.StartGGAccessToken,
     ""
   );
   const [displayedStartGGToken, setDisplayedStartGGToken] = React.useState("");
 
   const [startGGUrl, setStartGGUrl] = useReplicant<string>(
-    Replicants.StartGGUrl,
+    ReplicantType.StartGGUrl,
     ""
   );
   const [displayedStartGGUrl, setDisplayedStartGGUrl] = React.useState("");
 
   const [autoTrack, setAutoTrack] = useReplicant<boolean>(
-    Replicants.StartGGAutoTrack,
+    ReplicantType.StartGGAutoTrack,
     false
   );
   const [displayedAutoTrack, setDisplayedAutotrack] = React.useState(false);
 
   const [StreamQueueOptions] = useReplicant<StreamQueueOption[]>(
-    Replicants.StreamQueueOptions,
+    ReplicantType.StreamQueueOptions,
     []
   );
   const [StreamQueueSelectedOption, setStreamQueueSelectedOption] =
-    useReplicant<StreamQueueOption>(Replicants.StreamQueueSelectedOption, {
+    useReplicant<StreamQueueOption>(ReplicantType.StreamQueueSelectedOption, {
       name: "none",
       id: "none",
     });

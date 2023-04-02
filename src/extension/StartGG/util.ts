@@ -1,18 +1,18 @@
 import { MatchInfo, PlayerInfo, TeamInfo } from "../../types";
-import { Replicants } from "../../types/replicants";
+import { ReplicantType } from "../../types/replicants";
 import context from "../context";
 import { ConnectCodeID, SetInfo } from "./types";
 
 export const CONNECT_CODE_REGEX = /([a-zA-Z]+|\d+).*?([0-9]{1,3})/;
 
 export function getTournamentInfoFromUrl() {
-  const url = context.nodecg.readReplicant<string>(Replicants.StartGGUrl);
+  const url = context.nodecg.readReplicant<string>(ReplicantType.StartGGUrl);
   return parseTournamentInfo(url);
 }
 
 export function updateSubtitleFromStartGG(setInfo: SetInfo) {
   const subtitleInfo = context.nodecg.Replicant<string>(
-    Replicants.TournamentSubtitle
+    ReplicantType.TournamentSubtitle
   );
   subtitleInfo.value = formatStartGGRound(setInfo);
 }
@@ -25,7 +25,9 @@ export function formatStartGGRound(roundInfo: SetInfo) {
 }
 
 export function setTeamsFromCCIDs(playerIDs: ConnectCodeID[]) {
-  const matchInfo = context.nodecg.Replicant<MatchInfo>(Replicants.MatchInfo);
+  const matchInfo = context.nodecg.Replicant<MatchInfo>(
+    ReplicantType.MatchInfo
+  );
 
   if (playerIDs.length == 2) {
     if (

@@ -1,15 +1,19 @@
 import React from "react";
 import { useReplicant } from "use-nodecg";
 import ReplicantTextInput from "../util/ReplicantTextInput";
+import { ReplicantType } from "../../types/replicants";
 
 function App() {
   const [hideScoreboard, setHideScoreboard] = useReplicant<boolean>(
-    "hideScoreboard",
+    ReplicantType.HideScoreboard,
     true
   );
-  const [title, setTitle] = useReplicant<string>("TournamentTitle", "");
+  const [title, setTitle] = useReplicant<string>(
+    ReplicantType.TournamentTitle,
+    ""
+  );
   const [subtitle, setSubtitle] = useReplicant<string>(
-    "TournamentSubtitle",
+    ReplicantType.TournamentSubtitle,
     ""
   );
 

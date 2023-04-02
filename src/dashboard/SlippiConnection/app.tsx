@@ -3,27 +3,29 @@ import { useReplicant } from "use-nodecg";
 import { ConnectionStatus, SlippiMethod } from "../../types";
 // This is needed for some reason to get nodecg
 import NodeCG from "nodecg-types/types/browser"; // eslint-disable-line
+import { ReplicantType } from "../../types/replicants";
+import { MessageType } from "../../types/messages";
 
 function App() {
   // this too
   const { nodecg } = window || globalThis || {};
 
   const [slippiMethod, setSlippiMethod] = useReplicant<SlippiMethod>(
-    "slippiMethod",
+    ReplicantType.SlippiMethod,
     "fileWatcher"
   );
   const [displayedSlippiMethod, setDisplayedSlippiMethod] =
     React.useState<SlippiMethod>(slippiMethod);
 
   const [replayFolder, setReplayFolder] = useReplicant<string>(
-    "slippiReplayFolder",
+    ReplicantType.SlippiReplayFolder,
     ""
   );
   const [displayedReplayFolder, setDisplayedReplayFolder] =
     React.useState<string>(replayFolder);
 
   const [connectionStatus] = useReplicant<ConnectionStatus>(
-    "slippiConnectionStatus",
+    ReplicantType.SlippiConnectionStatus,
     "disconnected"
   );
 
@@ -51,12 +53,12 @@ function App() {
 
   const connectToSlippi = () => {
     console.log("connecting");
-    nodecg.sendMessage("slippiTryConnect");
+    nodecg.sendMessage(MessageType.SlippiTryConnect);
   };
 
   const disconnectFromSlippi = () => {
     console.log("disconnecting");
-    nodecg.sendMessage("slippiTryDisconnect");
+    nodecg.sendMessage(MessageType.SlippiTryDisconnect);
   };
 
   React.useEffect(() => {

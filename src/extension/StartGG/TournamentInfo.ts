@@ -19,7 +19,7 @@ import {
   updateSubtitleFromStartGG,
 } from "./util";
 import { MatchInfo, SetPreviewInfo } from "../../types";
-import { Replicants } from "../../types/replicants";
+import { ReplicantType } from "../../types/replicants";
 import { MessageType } from "../../types/messages";
 
 const findEntrantsInEventQuery = graphql(`
@@ -611,7 +611,7 @@ export async function useSetInfo(setId: string): Promise<void> {
     if (players.length == 2) {
       setTeamsFromCCIDs(players.map((c) => c[0]));
       const matchInfo = context.nodecg.Replicant<MatchInfo>(
-        Replicants.MatchInfo
+        ReplicantType.MatchInfo
       );
 
       matchInfo.value.teams.forEach((t) => {

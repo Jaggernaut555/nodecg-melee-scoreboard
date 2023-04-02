@@ -6,6 +6,7 @@ import { version, name } from "../../package.json";
 import { initTwitch } from "./Twitch";
 import { initStartGG } from "./StartGG";
 import context from "./context";
+import { ReplicantType } from "../types/replicants";
 
 module.exports = function (nodecg: NodeCG) {
   context.nodecg = nodecg;
@@ -34,6 +35,10 @@ module.exports = function (nodecg: NodeCG) {
 
 function initReplicants() {
   // Some things I want to just make sure exist for use everywhere on the scoreboard
-  context.nodecg.Replicant("matchInfo", { defaultValue: new MatchInfo() });
-  context.nodecg.Replicant<boolean>("hideScoreboard", { defaultValue: true });
+  context.nodecg.Replicant(ReplicantType.MatchInfo, {
+    defaultValue: new MatchInfo(),
+  });
+  context.nodecg.Replicant<boolean>(ReplicantType.HideScoreboard, {
+    defaultValue: true,
+  });
 }

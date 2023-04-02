@@ -6,9 +6,13 @@ import PlayerScore from "./PlayerPlates/playerScore";
 import { MatchInfo, PlayerInfo, TeamInfo } from "../../types";
 import PlayerBracket from "./PlayerPlates/playerBracket";
 import TitlePlate from "./titlePlate";
+import { ReplicantType } from "../../types/replicants";
 
 function App() {
-  const [matchInfo] = useReplicant<MatchInfo>("matchInfo", new MatchInfo());
+  const [matchInfo] = useReplicant<MatchInfo>(
+    ReplicantType.MatchInfo,
+    new MatchInfo()
+  );
 
   const [team1Info, setTeam1Info] = React.useState<TeamInfo>(new TeamInfo());
   const [team2Info, setTeam2Info] = React.useState<TeamInfo>(new TeamInfo());
@@ -20,9 +24,12 @@ function App() {
     new PlayerInfo()
   );
 
-  const [hideScoreboard] = useReplicant<boolean>("hideScoreboard", true);
-  const [title] = useReplicant<string>("TournamentTitle", "");
-  const [subtitle] = useReplicant<string>("TournamentSubtitle", "");
+  const [hideScoreboard] = useReplicant<boolean>(
+    ReplicantType.HideScoreboard,
+    true
+  );
+  const [title] = useReplicant<string>(ReplicantType.TournamentTitle, "");
+  const [subtitle] = useReplicant<string>(ReplicantType.TournamentSubtitle, "");
 
   React.useEffect(() => {
     if (matchInfo.teams.length == 2) {

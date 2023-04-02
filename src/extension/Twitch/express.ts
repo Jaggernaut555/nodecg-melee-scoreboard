@@ -6,6 +6,7 @@ import { RefreshingAuthProvider, AccessToken } from "@twurple/auth";
 
 import context from "../context";
 import twitchContext from "./twitchContext";
+import { ReplicantType } from "../../types/replicants";
 
 const SESSION_SECRET = "Some Text";
 const SCOPE = [
@@ -15,9 +16,12 @@ const SCOPE = [
 ];
 
 export function initTwitchExpress(): boolean {
-  const twitchClientId = context.nodecg.readReplicant<string>("twitchClientId");
-  const twitchClientSecret =
-    context.nodecg.readReplicant<string>("twitchClientSecret");
+  const twitchClientId = context.nodecg.readReplicant<string>(
+    ReplicantType.TwitchClientId
+  );
+  const twitchClientSecret = context.nodecg.readReplicant<string>(
+    ReplicantType.TwitchClientSecret
+  );
 
   if (!twitchClientId || !twitchClientSecret) {
     context.nodecg.log.error(
@@ -61,7 +65,9 @@ export function initTwitchExpress(): boolean {
         return;
       }
 
-      const twitchUser = context.nodecg.Replicant<string>("twitchUserId");
+      const twitchUser = context.nodecg.Replicant<string>(
+        ReplicantType.TwitchUserId
+      );
       twitchUser.value = profile.id;
       if (
         profile.broadcaster_type !== "affiliate" &&
@@ -76,8 +82,9 @@ export function initTwitchExpress(): boolean {
         return;
       }
 
-      const tokenData =
-        context.nodecg.Replicant<AccessToken>("twitchAccessToken");
+      const tokenData = context.nodecg.Replicant<AccessToken>(
+        ReplicantType.TwitchAccessToken
+      );
       tokenData.value = {
         accessToken,
         refreshToken,
@@ -118,7 +125,9 @@ export function initTwitchExpress(): boolean {
 
   context.nodecg.mount(app);
 
-  const token = context.nodecg.readReplicant<AccessToken>("twitchAccessToken");
+  const token = context.nodecg.readReplicant<AccessToken>(
+    ReplicantType.TwitchAccessToken
+  );
   if (token) {
     initApi();
   }
@@ -127,10 +136,15 @@ export function initTwitchExpress(): boolean {
 }
 
 function initApi() {
-  const twitchClientId = context.nodecg.readReplicant<string>("twitchClientId");
-  const twitchClientSecret =
-    context.nodecg.readReplicant<string>("twitchClientSecret");
-  const twitchUser = context.nodecg.readReplicant<string>("twitchUserId");
+  const twitchClientId = context.nodecg.readReplicant<string>(
+    ReplicantType.TwitchClientId
+  );
+  const twitchClientSecret = context.nodecg.readReplicant<string>(
+    ReplicantType.TwitchClientSecret
+  );
+  const twitchUser = context.nodecg.readReplicant<string>(
+    ReplicantType.TwitchUserId
+  );
 
   if (!twitchClientId || !twitchClientSecret) {
     context.nodecg.log.error(
@@ -139,7 +153,9 @@ function initApi() {
     return;
   }
 
-  const token = context.nodecg.readReplicant<AccessToken>("twitchAccessToken");
+  const token = context.nodecg.readReplicant<AccessToken>(
+    ReplicantType.TwitchAccessToken
+  );
 
   if (!token) {
     context.nodecg.log.error("Re-log in to twitch to get a new token");
@@ -153,8 +169,9 @@ function initApi() {
       // TODO:
       // DEPRECATION WARNING: please update your onRefresh callback to take a user ID as first parameter
       onRefresh: async (userId: string, newToken: AccessToken) => {
-        const tokenData =
-          context.nodecg.Replicant<AccessToken>("twitchAccessToken");
+        const tokenData = context.nodecg.Replicant<AccessToken>(
+          ReplicantType.TwitchAccessToken
+        );
         tokenData.value = newToken;
         context.nodecg.log.debug("Refreshing token");
       },
@@ -167,6 +184,8 @@ function initApi() {
     });
   }
 
-  const validLogin = context.nodecg.Replicant<boolean>("twitchedValidLogin");
+  const validLogin = context.nodecg.Replicant<boolean>(
+    ReplicantType.TwitchValidLogin
+  );
   validLogin.value = true;
 }

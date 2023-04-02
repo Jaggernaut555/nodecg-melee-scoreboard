@@ -1,6 +1,6 @@
 import { MatchInfo, StreamQueueOption } from "../../types";
 import { MessageType } from "../../types/messages";
-import { Replicants } from "../../types/replicants";
+import { ReplicantType } from "../../types/replicants";
 import context from "../context";
 import { graphql } from "./gql";
 import { StreamQueueInfoQuery, StreamQueueSetsQuery } from "./gql/graphql";
@@ -79,7 +79,7 @@ export function initStreamQueue() {
 
 async function updateStreamQueueOptions() {
   const SQOptions = context.nodecg.Replicant<StreamQueueOption[]>(
-    Replicants.StreamQueueOptions,
+    ReplicantType.StreamQueueOptions,
     { defaultValue: [] }
   );
 
@@ -122,7 +122,7 @@ async function updateStreamQueueOptions() {
 
 async function useNextStreamQueueSet() {
   const SQSelectedOption = context.nodecg.Replicant<StreamQueueOption>(
-    Replicants.StreamQueueSelectedOption,
+    ReplicantType.StreamQueueSelectedOption,
     { defaultValue: { name: "none", id: "none" } }
   );
 
@@ -217,7 +217,7 @@ async function useNextStreamQueueSet() {
 
       if (results.length == 2) {
         const matchInfo = context.nodecg.Replicant<MatchInfo>(
-          Replicants.MatchInfo
+          ReplicantType.MatchInfo
         );
 
         matchInfo.value.teams.forEach((t) => {

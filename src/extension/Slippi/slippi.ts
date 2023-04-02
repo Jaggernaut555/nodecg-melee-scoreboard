@@ -1,12 +1,20 @@
 import { SlippiMethod } from "../../types";
+import { MessageType } from "../../types/messages";
+import { ReplicantType } from "../../types/replicants";
 import context from "../context";
 import { deactivateReplay, initReplay } from "./replay";
 
 export function initSlippi() {
-  context.nodecg.sendMessage("slippiConnectionStatus", "disconnected");
-  const method = context.nodecg.Replicant<SlippiMethod>("slippiMethod", {
-    defaultValue: "fileWatcher",
-  });
+  context.nodecg.sendMessage(
+    MessageType.SlippiConnectionStatus,
+    "disconnected"
+  );
+  const method = context.nodecg.Replicant<SlippiMethod>(
+    ReplicantType.SlippiMethod,
+    {
+      defaultValue: "fileWatcher",
+    }
+  );
 
   let initFunc: () => void = initReplay;
   let stopFunc: () => void = deactivateReplay;
@@ -29,12 +37,12 @@ export function initSlippi() {
     }
   });
 
-  context.nodecg.listenFor("slippiTryConnect", () => {
+  context.nodecg.listenFor(MessageType.SlippiTryConnect, () => {
     context.nodecg.log.info("trying to connect");
     initFunc();
   });
 
-  context.nodecg.listenFor("slippiTryDisconnect", () => {
+  context.nodecg.listenFor(MessageType.SlippiTryDisconnect, () => {
     context.nodecg.log.info("trying to disconnect");
     stopFunc();
   });

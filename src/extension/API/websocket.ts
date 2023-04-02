@@ -8,6 +8,7 @@ import {
   updateScore,
   updateScoreboardHidden,
 } from "./api";
+import { ReplicantType } from "../../types/replicants";
 
 let io: Server;
 
@@ -20,7 +21,9 @@ export function initWebsocket() {
     });
 
     client.on("Score", (TeamIndex) => {
-      const matchInfo = context.nodecg.readReplicant<MatchInfo>("matchInfo");
+      const matchInfo = context.nodecg.readReplicant<MatchInfo>(
+        ReplicantType.MatchInfo
+      );
       if (
         !matchInfo ||
         !matchInfo.teams ||
@@ -36,7 +39,9 @@ export function initWebsocket() {
     });
 
     client.on("Bracket", (TeamIndex) => {
-      const matchInfo = context.nodecg.readReplicant<MatchInfo>("matchInfo");
+      const matchInfo = context.nodecg.readReplicant<MatchInfo>(
+        ReplicantType.MatchInfo
+      );
       if (
         !matchInfo ||
         !matchInfo.teams ||
@@ -54,7 +59,7 @@ export function initWebsocket() {
     client.on("Prediction", () => {
       const predictionStatus =
         context.nodecg.readReplicant<TwitchPredictionStatus>(
-          "twitchCurrentPredictionStatus"
+          ReplicantType.TwitchCurrentPredictionStatus
         );
       io.to("Prediction").emit("PredictionUpdate", {
         PredictionStatus: predictionStatus,
@@ -62,8 +67,9 @@ export function initWebsocket() {
     });
 
     client.on("HideScoreboard", () => {
-      const hideScoreboard =
-        context.nodecg.readReplicant<boolean>("hideScoreboard");
+      const hideScoreboard = context.nodecg.readReplicant<boolean>(
+        ReplicantType.HideScoreboard
+      );
       io.to("HideScoreboard").emit("HideScoreboardUpdate", {
         HideScoreboard: hideScoreboard,
       });
@@ -99,7 +105,9 @@ export function initWebsocket() {
 }
 
 function initReplicantListeners() {
-  const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
+  const matchInfo = context.nodecg.Replicant<MatchInfo>(
+    ReplicantType.MatchInfo
+  );
 
   matchInfo.on("change", (newValue, oldValue) => {
     if (!newValue || !newValue.teams) {
@@ -128,7 +136,9 @@ function initReplicantListeners() {
     });
   });
 
-  const hideScoreboard = context.nodecg.Replicant<boolean>("hideScoreboard");
+  const hideScoreboard = context.nodecg.Replicant<boolean>(
+    ReplicantType.HideScoreboard
+  );
   hideScoreboard.on("change", (newValue, oldValue) => {
     if (newValue === null || newValue == oldValue) {
       return;
@@ -139,7 +149,7 @@ function initReplicantListeners() {
   });
 
   const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
-    "twitchCurrentPredictionStatus"
+    ReplicantType.TwitchCurrentPredictionStatus
   );
   predictionStatus.on("change", (newValue, oldValue) => {
     if (newValue === null || !newValue || newValue == oldValue) {

@@ -4,6 +4,13 @@ export enum MessageType {
   PredictionEnded = "PredictionEnded",
   PredictionCancelled = "PredictionCancelled",
 
+  TwitchCreatePrediction = "twitchCreatePrediction",
+  TwitchLockPrediction = "twitchLockPrediction",
+  TwitchCancelPrediction = "twitchCancelPrediction",
+  TwitchResolvePrediction = "twitchResolvePrediction",
+  TwitchProgressPrediction = "twitchProgressPrediction",
+  TwitchCheckToken = "twitchCheckToken",
+
   UseNextStreamQueue = "UseNextStreamQueue",
   RefreshStreamQueues = "RefreshStreamQueues",
 
@@ -11,4 +18,8 @@ export enum MessageType {
   SelectStartGGMatch = "SelectStartGGMatch",
 
   UseSetPageNavigation = "UseSetPageNavigation",
+
+  SlippiTryConnect = "slippiTryConnect",
+  SlippiTryDisconnect = "slippiTryDisconnect",
+  SlippiConnectionStatus = "slippiConnectionStatus",
 }

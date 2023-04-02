@@ -1,4 +1,6 @@
 import { MatchInfo, TwitchPredictionStatus } from "../../types";
+import { MessageType } from "../../types/messages";
+import { ReplicantType } from "../../types/replicants";
 import { swapTeamInfo } from "../../util";
 import context from "../context";
 import { initWebsocket } from "./websocket";
@@ -70,7 +72,9 @@ export function initAPI() {
 }
 
 export function swapPlayers() {
-  const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
+  const matchInfo = context.nodecg.Replicant<MatchInfo>(
+    ReplicantType.MatchInfo
+  );
 
   if (
     matchInfo.value &&
@@ -84,7 +88,9 @@ export function swapPlayers() {
 }
 
 export function updateScore(dto: scoreDTO) {
-  const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
+  const matchInfo = context.nodecg.Replicant<MatchInfo>(
+    ReplicantType.MatchInfo
+  );
 
   if (
     !matchInfo.value ||
@@ -118,7 +124,9 @@ export function updateScore(dto: scoreDTO) {
 }
 
 export function updateBracket(dto: bracketDTO) {
-  const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
+  const matchInfo = context.nodecg.Replicant<MatchInfo>(
+    ReplicantType.MatchInfo
+  );
 
   if (
     !matchInfo.value ||
@@ -154,7 +162,9 @@ export function updateBracket(dto: bracketDTO) {
 }
 
 export function resetScore() {
-  const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
+  const matchInfo = context.nodecg.Replicant<MatchInfo>(
+    ReplicantType.MatchInfo
+  );
 
   matchInfo.value.teams.forEach((t, i) => {
     matchInfo.value.teams[i].score = 0;
@@ -162,7 +172,7 @@ export function resetScore() {
 }
 
 export function updateScoreboardHidden(dto: scoreboardDTO) {
-  const sb = context.nodecg.Replicant<boolean>("hideScoreboard");
+  const sb = context.nodecg.Replicant<boolean>(ReplicantType.HideScoreboard);
 
   switch (dto.operation) {
     case "on":
@@ -184,24 +194,24 @@ export function updateScoreboardHidden(dto: scoreboardDTO) {
 
 export function updatePrediction(dto: predictionDTO) {
   const predictionStatus = context.nodecg.readReplicant<TwitchPredictionStatus>(
-    "twitchCurrentPredictionStatus"
+    ReplicantType.TwitchCurrentPredictionStatus
   );
   let messageName: string;
   switch (dto.operation) {
     case "create":
-      messageName = "twitchCreatePrediction";
+      messageName = MessageType.TwitchCreatePrediction;
       break;
     case "lock":
-      messageName = "twitchLockPrediction";
+      messageName = MessageType.TwitchLockPrediction;
       break;
     case "cancel":
-      messageName = "twitchCancelPrediction";
+      messageName = MessageType.TwitchCancelPrediction;
       break;
     case "resolve":
-      messageName = "twitchResolvePrediction";
+      messageName = MessageType.TwitchResolvePrediction;
       break;
     case "progress":
-      messageName = "twitchProgressPrediction";
+      messageName = MessageType.TwitchProgressPrediction;
       break;
     case "get":
       return { status: predictionStatus };

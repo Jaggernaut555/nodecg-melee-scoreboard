@@ -11,7 +11,7 @@ import * as path from "path";
 import context from "../context";
 import * as StartGG from "../StartGG/TournamentInfo";
 import { updateSubtitleFromStartGG } from "../StartGG/util";
-import { Replicants } from "../../types/replicants";
+import { ReplicantType } from "../../types/replicants";
 
 let currentGame: SlippiGame;
 let currentGameWatcher: chokidar.FSWatcher;
@@ -22,10 +22,10 @@ const testingMode = false;
 
 export async function initReplay() {
   const slippiFolder = context.nodecg.Replicant<string>(
-    Replicants.SlippiReplayFolder
+    ReplicantType.SlippiReplayFolder
   ).value;
   const connectionStatus = context.nodecg.Replicant<ConnectionStatus>(
-    Replicants.SlippiConnectionStatus
+    ReplicantType.SlippiConnectionStatus
   );
 
   context.nodecg.log.info("Setting up replay watcher");
@@ -59,7 +59,7 @@ export async function deactivateReplay() {
   }
   replayWatcher = null;
   const connectionStatus = context.nodecg.Replicant<ConnectionStatus>(
-    Replicants.SlippiConnectionStatus
+    ReplicantType.SlippiConnectionStatus
   );
   connectionStatus.value = "disconnected";
 }
@@ -437,18 +437,18 @@ function findWinningPort(game: SlippiGame): number {
 // }
 
 function updateMatchInfo(matchInfo: MatchInfo): void {
-  const mi = context.nodecg.Replicant<MatchInfo>(Replicants.MatchInfo);
+  const mi = context.nodecg.Replicant<MatchInfo>(ReplicantType.MatchInfo);
   mi.value = matchInfo;
 }
 
 // TODO: I think with the way nodecg works this is mutable
 // could replace it with getting a copy of the team instead
 function getMatchInfo() {
-  return context.nodecg.readReplicant<MatchInfo>(Replicants.MatchInfo);
+  return context.nodecg.readReplicant<MatchInfo>(ReplicantType.MatchInfo);
 }
 
 function autoCheckStartGG() {
-  return context.nodecg.Replicant<boolean>(Replicants.StartGGAutoTrack, {
+  return context.nodecg.Replicant<boolean>(ReplicantType.StartGGAutoTrack, {
     defaultValue: false,
   }).value;
 }

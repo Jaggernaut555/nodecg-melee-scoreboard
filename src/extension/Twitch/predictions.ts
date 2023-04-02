@@ -5,15 +5,22 @@ import { EventSubWsListener } from "@twurple/eventsub-ws";
 import twitchContext from "./twitchContext";
 import context from "../context";
 import { MessageType } from "../../types/messages";
+import { ReplicantType } from "../../types/replicants";
 
 // prediction time in seconds
 // TODO: could configure in ui
 const PREDICTION_TIME = 300;
 
 export function createPrediction() {
-  const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
-  const subtitle = context.nodecg.readReplicant<string>("TournamentSubtitle");
-  const twitchUser = context.nodecg.readReplicant<string>("twitchUserId");
+  const matchInfo = context.nodecg.Replicant<MatchInfo>(
+    ReplicantType.MatchInfo
+  );
+  const subtitle = context.nodecg.readReplicant<string>(
+    ReplicantType.TournamentSubtitle
+  );
+  const twitchUser = context.nodecg.readReplicant<string>(
+    ReplicantType.TwitchUserId
+  );
 
   if (!twitchUser) {
     context.nodecg.log.error("Can't create prediction");
@@ -35,7 +42,7 @@ export function createPrediction() {
     })
     .then((pred) => {
       const predictionId = context.nodecg.Replicant<string>(
-        "twitchCurrentPredictionId"
+        ReplicantType.TwitchCurrentPredictionId
       );
       predictionId.value = pred.id;
       pred.outcomes.forEach((outcomes, i) => {
@@ -48,9 +55,11 @@ export function createPrediction() {
 }
 
 export function lockPrediction() {
-  const twitchUser = context.nodecg.readReplicant<string>("twitchUserId");
+  const twitchUser = context.nodecg.readReplicant<string>(
+    ReplicantType.TwitchUserId
+  );
   const predictionId = context.nodecg.readReplicant<string>(
-    "twitchCurrentPredictionId"
+    ReplicantType.TwitchCurrentPredictionId
   );
 
   if (!twitchUser || !predictionId) {
@@ -69,11 +78,15 @@ export function lockPrediction() {
 }
 
 export function resolvePrediction() {
-  const twitchUser = context.nodecg.readReplicant<string>("twitchUserId");
-  const predictionId = context.nodecg.readReplicant<string>(
-    "twitchCurrentPredictionId"
+  const twitchUser = context.nodecg.readReplicant<string>(
+    ReplicantType.TwitchUserId
   );
-  const matchInfo = context.nodecg.readReplicant<MatchInfo>("matchInfo");
+  const predictionId = context.nodecg.readReplicant<string>(
+    ReplicantType.TwitchCurrentPredictionId
+  );
+  const matchInfo = context.nodecg.readReplicant<MatchInfo>(
+    ReplicantType.MatchInfo
+  );
 
   if (!twitchUser || !predictionId) {
     context.nodecg.log.error("Can't resolve prediction");
@@ -102,15 +115,17 @@ export function resolvePrediction() {
 }
 
 export function cancelPrediction() {
-  const twitchUser = context.nodecg.readReplicant<string>("twitchUserId");
+  const twitchUser = context.nodecg.readReplicant<string>(
+    ReplicantType.TwitchUserId
+  );
   const predictionId = context.nodecg.readReplicant<string>(
-    "twitchCurrentPredictionId"
+    ReplicantType.TwitchCurrentPredictionId
   );
 
   if (!twitchUser || !predictionId) {
     context.nodecg.log.error("Can't cancel prediction");
     const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
-      "twitchCurrentPredictionStatus"
+      ReplicantType.TwitchCurrentPredictionStatus
     );
     predictionStatus.value = "Stopped";
     return;
@@ -125,7 +140,7 @@ export function cancelPrediction() {
       context.nodecg.log.error(err);
       // If we can't cancel it make sure the prediction is stopped
       const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
-        "twitchCurrentPredictionStatus"
+        ReplicantType.TwitchCurrentPredictionStatus
       );
       predictionStatus.value = "Stopped";
     });
@@ -133,7 +148,7 @@ export function cancelPrediction() {
 
 export function progressPrediction() {
   const predictionStatus = context.nodecg.readReplicant<TwitchPredictionStatus>(
-    "twitchCurrentPredictionStatus"
+    ReplicantType.TwitchCurrentPredictionStatus
   );
 
   switch (predictionStatus) {
@@ -153,7 +168,9 @@ export function progressPrediction() {
 }
 
 export function initEventSubListener() {
-  const twitchUser = context.nodecg.readReplicant<string>("twitchUserId");
+  const twitchUser = context.nodecg.readReplicant<string>(
+    ReplicantType.TwitchUserId
+  );
 
   const listener = new EventSubWsListener({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -168,15 +185,17 @@ export function initEventSubListener() {
 
   listener.onChannelPredictionBegin(twitchUser, (pred) => {
     const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
-      "twitchCurrentPredictionStatus"
+      ReplicantType.TwitchCurrentPredictionStatus
     );
     predictionStatus.value = "Started";
     const predictionId = context.nodecg.Replicant<string>(
-      "twitchCurrentPredictionId"
+      ReplicantType.TwitchCurrentPredictionId
     );
     predictionId.value = pred.id;
 
-    const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
+    const matchInfo = context.nodecg.Replicant<MatchInfo>(
+      ReplicantType.MatchInfo
+    );
 
     let teamsFound = 0;
     for (const outcome of pred.outcomes) {
@@ -196,11 +215,11 @@ export function initEventSubListener() {
 
   listener.onChannelPredictionEnd(twitchUser, (pred) => {
     const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
-      "twitchCurrentPredictionStatus"
+      ReplicantType.TwitchCurrentPredictionStatus
     );
     predictionStatus.value = "Stopped";
     const predictionId = context.nodecg.Replicant<string>(
-      "twitchCurrentPredictionId"
+      ReplicantType.TwitchCurrentPredictionId
     );
     predictionId.value = "";
 
@@ -216,11 +235,11 @@ export function initEventSubListener() {
 
   listener.onChannelPredictionLock(twitchUser, (pred) => {
     const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
-      "twitchCurrentPredictionStatus"
+      ReplicantType.TwitchCurrentPredictionStatus
     );
     predictionStatus.value = "Locked";
     const predictionId = context.nodecg.Replicant<string>(
-      "twitchCurrentPredictionId"
+      ReplicantType.TwitchCurrentPredictionId
     );
     predictionId.value = pred.id;
 
@@ -229,7 +248,9 @@ export function initEventSubListener() {
 
   // This gets updated every time someone bets
   listener.onChannelPredictionProgress(twitchUser, (pred) => {
-    const matchInfo = context.nodecg.Replicant<MatchInfo>("matchInfo");
+    const matchInfo = context.nodecg.Replicant<MatchInfo>(
+      ReplicantType.MatchInfo
+    );
 
     for (const outcome of pred.outcomes) {
       const t = matchInfo.value.teams.find((t) => t.outcomeId == outcome.id);

@@ -12,6 +12,8 @@ import {
   initEventSubListener,
 } from "./predictions";
 import twitchContext from "./twitchContext";
+import { ReplicantType } from "../../types/replicants";
+import { MessageType } from "../../types/messages";
 
 export function initTwitch() {
   initMessages();
@@ -22,40 +24,50 @@ export function initTwitch() {
 }
 
 function initReplicants() {
-  const twitchCallbackUrl =
-    context.nodecg.Replicant<string>("twitchCallbackUrl");
+  const twitchCallbackUrl = context.nodecg.Replicant<string>(
+    ReplicantType.TwitchCallbackUrl
+  );
   twitchCallbackUrl.value = `http://${context.nodecg.config.baseURL}/auth/twitch/callback`;
 
-  const validLogin = context.nodecg.Replicant<boolean>("twitchedValidLogin");
+  const validLogin = context.nodecg.Replicant<boolean>(
+    ReplicantType.TwitchValidLogin
+  );
   validLogin.value = false;
 
-  const twitchClientId = context.nodecg.Replicant<string>("twitchClientId");
+  const twitchClientId = context.nodecg.Replicant<string>(
+    ReplicantType.TwitchClientId
+  );
   twitchClientId.once("change", (newValue) => {
     context.nodecg.log.debug(`twitchClientId ${newValue}`);
   });
-  const twitchClientSecret =
-    context.nodecg.Replicant<string>("twitchClientSecret");
+  const twitchClientSecret = context.nodecg.Replicant<string>(
+    ReplicantType.TwitchClientSecret
+  );
   twitchClientSecret.once("change", (newValue) => {
     context.nodecg.log.debug(`twitchClientSecret ${newValue}`);
   });
 
   // TODO: replicant initialization
   // For some reason this doesn't happen if I'm not listening for it
-  const twitchUser = context.nodecg.Replicant<string>("twitchUserId");
+  const twitchUser = context.nodecg.Replicant<string>(
+    ReplicantType.TwitchUserId
+  );
   twitchUser.once("change", (newValue) => {
     context.nodecg.log.debug(`twitchUserId ${newValue}`);
   });
 
-  const tokenData = context.nodecg.Replicant<AccessToken>("twitchAccessToken");
+  const tokenData = context.nodecg.Replicant<AccessToken>(
+    ReplicantType.TwitchAccessToken
+  );
   tokenData.once("change", (newValue) => {
     context.nodecg.log.debug(newValue);
   });
   // initialize prediction id
-  context.nodecg.Replicant<string>("twitchCurrentPredictionId", {
+  context.nodecg.Replicant<string>(ReplicantType.TwitchCurrentPredictionId, {
     defaultValue: "",
   });
   context.nodecg.Replicant<TwitchPredictionStatus>(
-    "twitchCurrentPredictionStatus",
+    ReplicantType.TwitchCurrentPredictionStatus,
     {
       defaultValue: "Stopped",
     }
@@ -63,27 +75,27 @@ function initReplicants() {
 }
 
 function initMessages() {
-  context.nodecg.listenFor("twitchCreatePrediction", () => {
+  context.nodecg.listenFor(MessageType.TwitchCreatePrediction, () => {
     createPrediction();
   });
 
-  context.nodecg.listenFor("twitchLockPrediction", () => {
+  context.nodecg.listenFor(MessageType.TwitchLockPrediction, () => {
     lockPrediction();
   });
 
-  context.nodecg.listenFor("twitchCancelPrediction", () => {
+  context.nodecg.listenFor(MessageType.TwitchCancelPrediction, () => {
     cancelPrediction();
   });
 
-  context.nodecg.listenFor("twitchResolvePrediction", () => {
+  context.nodecg.listenFor(MessageType.TwitchResolvePrediction, () => {
     resolvePrediction();
   });
 
-  context.nodecg.listenFor("twitchProgressPrediction", () => {
+  context.nodecg.listenFor(MessageType.TwitchProgressPrediction, () => {
     progressPrediction();
   });
 
-  context.nodecg.listenFor("twitchCheckToken", (val, ack) => {
+  context.nodecg.listenFor(MessageType.TwitchCheckToken, (val, ack) => {
     if (!initTwitchExpress()) {
       if (ack && !ack.handled) ack(new Error("Client settings not configured"));
       return;
@@ -96,12 +108,14 @@ function initMessages() {
 }
 
 export async function cleanApi() {
-  const twitchUser = context.nodecg.readReplicant<string>("twitchUserId");
+  const twitchUser = context.nodecg.readReplicant<string>(
+    ReplicantType.TwitchUserId
+  );
   const predictionId = context.nodecg.Replicant<string>(
-    "twitchCurrentPredictionId"
+    ReplicantType.TwitchCurrentPredictionId
   );
   const predictionStatus = context.nodecg.Replicant<TwitchPredictionStatus>(
-    "twitchCurrentPredictionStatus"
+    ReplicantType.TwitchCurrentPredictionStatus
   );
 
   if (twitchContext.api && predictionId.value) {

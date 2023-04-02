@@ -1,20 +1,31 @@
 import React, { useEffect } from "react";
 import { useReplicant } from "use-nodecg";
 import { TwitchPredictionStatus } from "../../types";
+import { ReplicantType } from "../../types/replicants";
+import { MessageType } from "../../types/messages";
 
 function App() {
   const [predictionStatus] = useReplicant<TwitchPredictionStatus>(
-    "twitchCurrentPredictionStatus",
+    ReplicantType.TwitchCurrentPredictionStatus,
     "Stopped"
   );
 
-  const [validLogin] = useReplicant<boolean>("twitchedValidLogin", false);
+  const [validLogin] = useReplicant<boolean>(
+    ReplicantType.TwitchValidLogin,
+    false
+  );
 
-  const [callbackUrl] = useReplicant<string>("twitchCallbackUrl", "");
-  const [twitchUserId] = useReplicant<string>("twitchUserId", "");
-  const [clientId, setClientId] = useReplicant<string>("twitchClientId", "");
+  const [callbackUrl] = useReplicant<string>(
+    ReplicantType.TwitchCallbackUrl,
+    ""
+  );
+  const [twitchUserId] = useReplicant<string>(ReplicantType.TwitchUserId, "");
+  const [clientId, setClientId] = useReplicant<string>(
+    ReplicantType.TwitchClientId,
+    ""
+  );
   const [clientSecret, setClientSecret] = useReplicant<string>(
-    "twitchClientSecret",
+    ReplicantType.TwitchClientSecret,
     ""
   );
 
@@ -44,7 +55,7 @@ function App() {
   const tryConnect = () => {
     // Send a message to try to set up
     nodecg
-      .sendMessage("twitchCheckToken")
+      .sendMessage(MessageType.TwitchCheckToken)
       .then(() => {
         // send to login page
         window.open("/auth/twitch", "_top");
@@ -56,19 +67,19 @@ function App() {
   };
 
   const startPrediction = () => {
-    nodecg.sendMessage("twitchCreatePrediction");
+    nodecg.sendMessage(MessageType.TwitchCreatePrediction);
   };
 
   const lockPrediction = () => {
-    nodecg.sendMessage("twitchLockPrediction");
+    nodecg.sendMessage(MessageType.TwitchLockPrediction);
   };
 
   const CancelPrediction = () => {
-    nodecg.sendMessage("twitchCancelPrediction");
+    nodecg.sendMessage(MessageType.TwitchCancelPrediction);
   };
 
   const resolvePrediction = () => {
-    nodecg.sendMessage("twitchResolvePrediction");
+    nodecg.sendMessage(MessageType.TwitchResolvePrediction);
   };
 
   return (

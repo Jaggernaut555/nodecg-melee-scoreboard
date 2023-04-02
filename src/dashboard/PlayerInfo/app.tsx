@@ -3,13 +3,14 @@ import { useReplicant } from "use-nodecg";
 import { MatchInfo, TeamInfo } from "../../types";
 import { copyMatchInfo, copyTeamInfo } from "../../util";
 import PanelTeamInfo from "./panelTeamInfo";
+import { ReplicantType } from "../../types/replicants";
 
 function App() {
   // NOTE: Do not mess with object properties directly.
   // Copy it THEN modify those copied ones
   // SEE: `info={copyTeamInfo(ti)} or `copyMatchInfo(matchInfo)` in this file
   const [matchInfo, setMatchInfo] = useReplicant<MatchInfo>(
-    "matchInfo",
+    ReplicantType.MatchInfo,
     new MatchInfo()
   );
 
