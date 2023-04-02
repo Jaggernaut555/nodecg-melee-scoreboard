@@ -79,7 +79,7 @@ function PanelTeamInfo(props: PanelTeamInfoProps) {
         <button onClick={removeTeam}>Remove Team</button>
       </div>
       <div>
-        <label>score</label>
+        <label>Score: </label>
         <input
           type="number"
           style={{ width: "35px" }}
@@ -113,6 +113,7 @@ function PanelTeamInfo(props: PanelTeamInfoProps) {
                 updateInfo={updatePlayer}
                 info={pi}
                 index={index}
+                teamIndex={props.index}
                 key={`PI_${props.index}_${index}`}
               />
             );

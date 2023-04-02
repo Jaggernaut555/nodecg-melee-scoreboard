@@ -4,7 +4,7 @@ export class PlayerInfo {
   name = "";
   code = "";
   character = "Unknown";
-  color = "default";
+  color = "Default";
   port = 0;
 }
 

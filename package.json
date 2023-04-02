@@ -56,6 +56,24 @@
         "width": 3
       },
       {
+        "name": "CharacterInfoDialog",
+        "title": "Character Selector",
+        "file": "CharacterInfoDialog.html",
+        "headerColor": "#525F78",
+        "width": 5,
+        "dialog": true,
+        "dialogButtons": [
+          {
+            "name": "Cancel",
+            "type": "dismiss"
+          },
+          {
+            "name": "Select",
+            "type": "confirm"
+          }
+        ]
+      },
+      {
         "name": "Tournament Info",
         "title": "Tournament Info",
         "file": "TournamentInfoPanel.html",

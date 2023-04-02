@@ -5,6 +5,9 @@ export enum ReplicantType {
   TournamentTitle = "TournamentTitle",
   TournamentSubtitle = "TournamentSubtitle",
 
+  SelectedTeam = "SelectedTeam",
+  SelectedPlayer = "SelectedPlayer",
+
   SlippiReplayFolder = "slippiReplayFolder",
   SlippiConnectionStatus = "slippiConnectionStatus",
   SlippiMethod = "slippiMethod",

@@ -1,0 +1,40 @@
+.css-container {
+  display: grid; 
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; 
+  grid-template-rows: 1fr 1fr 1fr 1fr; 
+  gap: 0px 0px; 
+  grid-template-areas: 
+    ". . . . . . . . ."
+    ". . . . . . . . ."
+    ". . . . . . . . ."
+    ". . . . . . . . ."; 
+}
+
+.css-item {
+  border: 1px solid black;
+  width: 35px;
+  height: 35px;
+  margin: auto;
+  display: flex;
+}
+
+.css-item:hover {
+  background: grey;  
+}
+
+.css-item.selected {
+  background-color: green !important;
+}
+
+.color-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.color-item:hover {
+  background-color: grey;
+}
+
+.color-item.selected {
+  background-color: green;
+}
